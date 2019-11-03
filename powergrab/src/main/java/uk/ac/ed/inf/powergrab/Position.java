@@ -4,20 +4,20 @@ public class Position {
 	public double latitude;
 	public double longitude;
 	
+	double r = 0.0003;
+	double w2 = r * Math.cos(Math.toRadians(67.5));
+	double w3 = r * Math.cos(Math.toRadians(45));
+	double w4 = r * Math.cos(Math.toRadians(22.5));
+	double h2 = w4;
+	double h3 = w3;
+	double h4 = w2;
+	
 	public Position(double latitude, double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
 	
 	public Position nextPosition(Direction direction) {
-		
-		double r = 0.0003;
-		double w2 = r * Math.cos(Math.toRadians(67.5));
-		double w3 = r * Math.cos(Math.toRadians(45));
-		double w4 = r * Math.cos(Math.toRadians(22.5));
-		double h2 = w4;
-		double h3 = w3;
-		double h4 = w2;
 		
 		switch(direction) {
 		case N:
