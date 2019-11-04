@@ -1,13 +1,14 @@
 package uk.ac.ed.inf.powergrab;
 
 import java.util.regex.*;
-import java.util.date.*;
+//import java.util.;
 
-public class PowerGrabInputValidator {
+public class InputValidator {
 	
 	public static boolean isValid(String[] args) {
 		
 		if (args.length != 6) {
+			System.out.println("Need 6 arguments to play PowerGrab");
 			return false;
 		}
 		

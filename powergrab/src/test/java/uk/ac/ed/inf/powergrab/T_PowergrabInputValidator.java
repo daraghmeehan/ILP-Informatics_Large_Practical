@@ -8,14 +8,14 @@ public class T_PowergrabInputValidator {
 
 	@Test
 	public void testBadArgsLength() {
-		assertFalse(PowerGrabInputValidator.isValid(new String[]{""}));
-		assertFalse(PowerGrabInputValidator.isValid(new String[]{"one"}));
-		assertFalse(PowerGrabInputValidator.isValid(new String[]{"one", "two", "three", "four", "five", "six", "seven"}));
+		assertFalse(InputValidator.isValid(new String[]{""}));
+		assertFalse(InputValidator.isValid(new String[]{"one"}));
+		assertFalse(InputValidator.isValid(new String[]{"one", "two", "three", "four", "five", "six", "seven"}));
 	}
 	
 	@Test
 	public void testGoodArgsLength() {
-		assertTrue(PowerGrabInputValidator.isValid(new String[]{"one", "two", "three", "four", "five", "six"}));
+		assertTrue(InputValidator.isValid(new String[]{"one", "two", "three", "four", "five", "six"}));
 	}
 
 }

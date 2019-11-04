@@ -9,9 +9,10 @@ import java.net.URL;
 
 public class MapLoader {
 	
-	public static PowerGrabMap load(String date) {
+	public static PowerGrabMap load(String day, String month, String year) {
 //		String mapString = "http://homepages.inf.ed.ac.uk/stg/powergrab/2019/01/01/powergrabmap.geojson";
-		String mapString = "http://homepages.inf.ed.ac.uk/stg/powergrab/" + date + "/powergrabmap.geojson";
+		String mapString = "http://homepages.inf.ed.ac.uk/stg/powergrab/"
+				+ year + "/" + month + "/" + day + "/powergrabmap.geojson";
 		try {
 			URL mapURL = new URL(mapString);
 			HttpURLConnection conn = (HttpURLConnection) mapURL.openConnection();

@@ -4,7 +4,7 @@ public class Position {
 	public double latitude;
 	public double longitude;
 	
-	double r = 0.0003;
+	static final double r = gameParams.;
 	double w2 = r * Math.cos(Math.toRadians(67.5));
 	double w3 = r * Math.cos(Math.toRadians(45));
 	double w4 = r * Math.cos(Math.toRadians(22.5));
