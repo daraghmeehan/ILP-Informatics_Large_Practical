@@ -13,6 +13,8 @@ public class PowerGrabImpl implements PowerGrab {
 	
 	public void setup(String[] args) {
 		// needs exception handling
+		boolean successfulMapLoad;
+		boolean successfulDroneLoad; //necessary?
 		this.map = MapLoader.load(args[0], args[1], args[2]);
 		this.drone = DroneLoader.load(args[3], args[4], args[5], args[6]);
 	}
