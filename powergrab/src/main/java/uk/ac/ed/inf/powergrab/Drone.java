@@ -5,13 +5,13 @@ import java.util.*;
 
 public class Drone {
 	
+	Position position;
+	int seed;
+	
 	public Drone(Position position, int seed) {
 		this.position = position;
 		this.seed = seed;
 	}
-	
-	Position position;
-	int seed;
 	
 	public List<Direction> calculateAvailableMoves() {
 		List<Direction> availableMoves = new ArrayList<Direction>();
@@ -23,6 +23,8 @@ public class Drone {
 		}
 		return availableMoves;
 	}
+	
+	
 	
 //	testing
 //	public static void main(String[] args) {

@@ -7,12 +7,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.mapbox.geojson.FeatureCollection;
+
 public class MapLoader {
 	
 	public static PowerGrabMap load(String day, String month, String year) {
-//		String mapString = "http://homepages.inf.ed.ac.uk/stg/powergrab/2019/01/01/powergrabmap.geojson";
 		String mapString = "http://homepages.inf.ed.ac.uk/stg/powergrab/"
 				+ year + "/" + month + "/" + day + "/powergrabmap.geojson";
+		
 		try {
 			URL mapURL = new URL(mapString);
 			HttpURLConnection conn = (HttpURLConnection) mapURL.openConnection();
@@ -30,6 +32,13 @@ public class MapLoader {
 			}
 			String mapSource = sb.toString();
 			System.out.println(mapSource.substring(0, 500));
+			FeatureCollection fc = FeatureCollection.fromJson(mapSource);
+			for (com.mapbox.geojson.Feature f : fc.features()) {
+				System.out.println(f.getProperty("coins").getAsString());
+			}
+			
+			return new PowerGrabMap(fc);
+			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -38,6 +47,10 @@ public class MapLoader {
 //		catch (Exception e) {
 //			System.out.println("hello");
 //		}
+	}
+	
+	public static void main(String[] args) {
+		MapLoader.load("05", "05", "2019");
 	}
 	
 }

@@ -2,12 +2,16 @@ package uk.ac.ed.inf.powergrab;
 
 public class DroneLoader {
 
-	public static Drone load(String initLatitude, String initLongitude, String seed, String droneVersion) {
+	public static Drone load(String initLatitudeAsString, String initLongitudeAsString, String seedAsString, String droneVersion) {
 		// needs exception handling? where
+		// assert drone in game area
+		double initLatitude = Double.parseDouble(initLatitudeAsString);
+		double initLongitude = Double.parseDouble(initLongitudeAsString);
+		int seed = Integer.parseInt(seedAsString);
 		if (droneVersion.equals("stateful")) {
-			return new StatefulDrone(new Position(initLatitude, initLongitude, Integer.parseInt(seed)));
+			return new StatefulDrone(new Position(initLatitude, initLongitude), seed);
 		} else {
-			return new StatelessDrone(new Position(initLatitude, initLongitude, Integer.parseInt(seed));
+			return new StatelessDrone(new Position(initLatitude, initLongitude), seed);
 		}
 	}
 

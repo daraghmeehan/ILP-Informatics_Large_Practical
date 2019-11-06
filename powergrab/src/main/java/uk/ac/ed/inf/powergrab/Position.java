@@ -4,13 +4,13 @@ public class Position {
 	public double latitude;
 	public double longitude;
 	
-	static final double r = gameParams.;
-	double w2 = r * Math.cos(Math.toRadians(67.5));
-	double w3 = r * Math.cos(Math.toRadians(45));
-	double w4 = r * Math.cos(Math.toRadians(22.5));
-	double h2 = w4;
-	double h3 = w3;
-	double h4 = w2;
+	static double r = 0.0003;
+	static double w2 = r * Math.cos(Math.toRadians(67.5));
+	static double w3 = r * Math.cos(Math.toRadians(45));
+	static double w4 = r * Math.cos(Math.toRadians(22.5));
+	static double h2 = w4;
+	static double h3 = w3;
+	static double h4 = w2;
 	
 	public Position(double latitude, double longitude) {
 		this.latitude = latitude;
