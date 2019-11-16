@@ -4,6 +4,7 @@ public class GameParameters {
 	
 	public final int maxMoves;
 	public final double moveDistance, maxLatitude, minLatitude, maxLongitude, minLongitude, movePowerCost;
+//	public final double initialDronePower, initialDroneCoins;
 	
 	public GameParameters(int maxMoves, double moveDistance, double maxLatitude, double minLatitude,
 			double maxLongitude, double minLongitude, double movePowerCost) {

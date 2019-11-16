@@ -8,10 +8,11 @@ public class DroneLoader {
 		double initLatitude = Double.parseDouble(initLatitudeAsString);
 		double initLongitude = Double.parseDouble(initLongitudeAsString);
 		int seed = Integer.parseInt(seedAsString);
-		if (droneVersion.equals("stateful")) {
-			return new StatefulDrone(new Position(initLatitude, initLongitude), seed);
-		} else {
+		
+		if (droneVersion.equals("stateless")) {
 			return new StatelessDrone(new Position(initLatitude, initLongitude), seed);
+		} else {
+			return new StatefulDrone(new Position(initLatitude, initLongitude), seed);
 		}
 	}
 

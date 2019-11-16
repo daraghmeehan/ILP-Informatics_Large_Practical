@@ -1,12 +1,12 @@
 package uk.ac.ed.inf.powergrab;
 
-public class PowerStation {
+public class ChargingStation {
 	
 	Position position;
-	float coins;
-	float power;
+	double coins;
+	double power;
 	
-	public PowerStation(Position position, float coins, float power) {
+	public ChargingStation(Position position, double coins, double power) {
 		this.position = position;
 		this.coins = coins;
 		this.power = power;
