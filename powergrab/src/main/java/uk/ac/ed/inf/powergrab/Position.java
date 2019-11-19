@@ -62,4 +62,10 @@ public class Position {
 				&& (longitude > -3.192473) && (longitude < -3.184319);
 	}
 	
+	public static double calculateDistance(Position p1, Position p2) {
+		double latitudeDifference = p1.latitude - p2.latitude;
+		double longitudeDifference = p1.longitude - p2.longitude;
+		return Math.sqrt(latitudeDifference*latitudeDifference + longitudeDifference*longitudeDifference);
+	}
+	
 }

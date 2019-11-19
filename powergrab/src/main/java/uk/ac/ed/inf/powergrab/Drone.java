@@ -3,6 +3,8 @@ package uk.ac.ed.inf.powergrab;
 // Is this necessary here?
 import java.util.*;
 
+import uk.ac.ed.inf.powergrab.ChargingStation.StationValue;
+
 public abstract class Drone {
 	
 	Position position;
@@ -24,26 +26,58 @@ public abstract class Drone {
 		return power >= 1.25;
 	}
 	
-	public abstract void makeMove();
+	public abstract Move makeMove(PowerGrabMap map);
 	
-	public List<Direction> calculateAvailableMoves() {
-		List<Direction> availableMoves = new ArrayList<Direction>();
+	public List<Direction> calculateAvailableDirections() {
+		List<Direction> availableDirections = new ArrayList<Direction>();
 		for (Direction d : Direction.values()) {
 			Position newPosition = this.position.nextPosition(d);
 			if (newPosition.inPlayArea()) {
-				availableMoves.add(d);
+				availableDirections.add(d);
 			}
 		}
-		return availableMoves;
+		return availableDirections;
 	}
 	
-	public void makeRandomMove() {
-		List<Direction> availableMoves = this.calculateAvailableMoves();
+	public Move chooseRandomMove(PowerGrabMap map) {
+		List<ChargingStation> nearbyStations = map.calculateNearbyStations(this.position);
+		List<Direction> availableDirections = this.calculateAvailableDirections();
+		
+		Move bestPositiveMove;
+		Move bestNegativeMove;
+		List<Move> neutralMoves = new ArrayList<Move>();
+		
+		for (Direction d : availableDirections) {
+			Position newPosition = this.position.nextPosition(d);
+			ChargingStation closestStation = map.closestStation(newPosition);
+			if (closestStation.isInRange(newPosition)) {
+				;
+				if (closestStation.isPositive()) {
+					positiveDirections++;
+				} else if (closestStation.isNegative()) {
+					negativeDirections++;
+				} else {
+					neutralStations++;
+				}
+			} else {
+				directionOutcomes.put(d, null);
+				
+			}
+		}
+		
+		directionOutcomes.
+		
+		
 		
 	}
 	
 	
-	
+//	public static List<ChargingStation> calculateNearbyStations(Position position) {
+//		List<ChargingStation> nearbyStations = new ArrayList<ChargingStation>();
+//		for (ChargingStation chargingStation : ChargingStations) {
+//			if (chargingStation)
+//		}
+//	}
 	
 	
 //	testing

@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class T_PowergrabInputValidator {
+public class PowerGrabInputValidatorTest {
 
 	@Test
 	public void testBadArgsLength() {
