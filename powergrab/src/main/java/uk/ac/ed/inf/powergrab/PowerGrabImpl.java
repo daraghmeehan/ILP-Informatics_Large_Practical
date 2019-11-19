@@ -3,7 +3,7 @@ package uk.ac.ed.inf.powergrab;
 import java.util.List;
 import java.util.ArrayList;
 
-public class PowerGrabImpl implements PowerGrab {
+public class PowerGrabImpl implements PowerGrab { // Do I need an interface?
 	
 	private String day;
 	private String month;

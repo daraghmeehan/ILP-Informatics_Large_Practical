@@ -1,8 +1,8 @@
 package uk.ac.ed.inf.powergrab;
 
 public class Position {
-	public double latitude;
-	public double longitude;
+	private double latitude;
+	private double longitude;
 	
 	static double r = 0.0003;
 	static double w2 = r * Math.cos(Math.toRadians(67.5));
@@ -15,6 +15,14 @@ public class Position {
 	public Position(double latitude, double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
+	}
+	
+	public double getLatitude() {
+		return this.latitude;
+	}
+	
+	public double getLongitude() {
+		return this.longitude;
 	}
 	
 	public Position nextPosition(Direction direction) {

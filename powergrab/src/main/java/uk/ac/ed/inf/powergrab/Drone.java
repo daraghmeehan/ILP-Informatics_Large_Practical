@@ -2,8 +2,7 @@ package uk.ac.ed.inf.powergrab;
 
 // Is this necessary here?
 import java.util.*;
-
-import uk.ac.ed.inf.powergrab.ChargingStation.StationValue;
+import javafx.util.Pair;
 
 public abstract class Drone {
 	
@@ -26,8 +25,25 @@ public abstract class Drone {
 		return power >= 1.25;
 	}
 	
-	public abstract Move makeMove(PowerGrabMap map);
+	public Move makeMove(PowerGrabMap map) {
+		Position positionBefore = this.position;
+		
+		Pair<Direction, ChargingStation> directionAndChargingStation = chooseDirection(map);
+		Direction moveDirection = directionAndChargingStation.getKey();
+		ChargingStation chargingStation = directionAndChargingStation.getValue();
+		
+		if (chargingStation != null) {
+			charge(chargingStation);
+		}
+		
+		Position positionAfter = this.position.nextPosition(moveDirection);
+		double coinsAfter = this.coins;
+		double powerAfter = this.power;
+		return new Move(positionBefore, moveDirection, positionAfter, coinsAfter, powerAfter);
+	}
 	
+	public abstract Pair<Direction, ChargingStation> chooseDirection(PowerGrabMap map);
+
 	public List<Direction> calculateAvailableDirections() {
 		List<Direction> availableDirections = new ArrayList<Direction>();
 		for (Direction d : Direction.values()) {
@@ -39,7 +55,7 @@ public abstract class Drone {
 		return availableDirections;
 	}
 	
-	public Move chooseRandomMove(PowerGrabMap map) {
+	public Pair<Direction, ChargingStation> chooseRandomDirection(PowerGrabMap map) {
 		List<ChargingStation> nearbyStations = map.calculateNearbyStations(this.position);
 		List<Direction> availableDirections = this.calculateAvailableDirections();
 		
@@ -47,27 +63,28 @@ public abstract class Drone {
 		Move bestNegativeMove;
 		List<Move> neutralMoves = new ArrayList<Move>();
 		
-		for (Direction d : availableDirections) {
-			Position newPosition = this.position.nextPosition(d);
-			ChargingStation closestStation = map.closestStation(newPosition);
-			if (closestStation.isInRange(newPosition)) {
-				;
-				if (closestStation.isPositive()) {
-					positiveDirections++;
-				} else if (closestStation.isNegative()) {
-					negativeDirections++;
-				} else {
-					neutralStations++;
-				}
-			} else {
-				directionOutcomes.put(d, null);
-				
-			}
-		}
+		return null;
+//		for (Direction d : availableDirections) {
+//			Position newPosition = this.position.nextPosition(d);
+//			ChargingStation closestStation = map.closestStation(newPosition);
+//			if (closestStation.isInRange(newPosition)) {
+//				;
+//				if (closestStation.isPositive()) {
+//					positiveDirections++;
+//				} else if (closestStation.isNegative()) {
+//					negativeDirections++;
+//				} else {
+//					neutralStations++;
+//				}
+//			} else {
+//				directionOutcomes.put(d, null);
+//				
+//			}
+//		}
 		
-		directionOutcomes.
-		
-		
+	}
+	
+	public void charge(ChargingStation chargingStation) {
 		
 	}
 	
