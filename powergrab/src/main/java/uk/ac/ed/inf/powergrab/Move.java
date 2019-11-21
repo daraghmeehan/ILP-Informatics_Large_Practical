@@ -6,9 +6,9 @@ import java.util.Locale;
 
 public class Move {
 	
-	Position positionBefore;
+	private Position positionBefore;
 	Direction moveDirection;
-	Position positionAfter;
+	private Position positionAfter;
 //	ChargingStation chargingStation;
 	double coinsAfter;
 	double powerAfter;
@@ -24,6 +24,14 @@ public class Move {
 		this.positionAfter = positionAfter;
 		this.coinsAfter = coinsAfter;
 		this.powerAfter = powerAfter;
+	}
+	
+	public Position getPositionBefore() {
+		return this.positionBefore;
+	}
+
+	public Position getPositionAfter() {
+		return this.positionAfter;
 	}
 	
 	@Override

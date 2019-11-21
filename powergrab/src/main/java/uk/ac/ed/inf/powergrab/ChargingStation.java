@@ -41,5 +41,13 @@ public class ChargingStation {
 		// game parameters
 		return Position.calculateDistance(this.position, position) < 0.00025;
 	}
+
+	public void transferCoins(double coinsTransfer) {
+		this.coins -= coinsTransfer;
+	}
+
+	public void transferPower(double powerTransfer) {
+		this.power -= powerTransfer;
+	}
 	
 }

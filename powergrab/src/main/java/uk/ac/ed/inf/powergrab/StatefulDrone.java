@@ -11,8 +11,12 @@ public class StatefulDrone extends Drone {
 		super(position, seed);
 	}
 	
-	public void makeMove(PowerGrabMap map) {
-		
+	public Direction chooseDirection(List<ChargingStation> chargingStations) {
+		if (nextMoves.size() != 0) {
+			return nextMoves.remove(0);
+		} else {
+			return null;
+		}
 	}
 	
 }

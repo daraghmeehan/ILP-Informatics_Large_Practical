@@ -7,8 +7,8 @@ public class InputValidator {
 	
 	public static boolean isValid(String[] args) {
 		
-		if (args.length != 6) {
-			System.out.println("Need 6 arguments to play PowerGrab");
+		if (args.length != 7) {
+			System.out.println("Need 7 arguments to play PowerGrab");
 			return false;
 		}
 		

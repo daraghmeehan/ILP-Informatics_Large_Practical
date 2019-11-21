@@ -10,9 +10,9 @@ import java.net.URL;
 
 import com.mapbox.geojson.FeatureCollection;
 
-public class MapLoader {
+public class MapCreator {
 	
-	public static PowerGrabMap load(String day, String month, String year) {
+	public static PowerGrabMap create(String day, String month, String year) {
 		
 		String mapString = "http://homepages.inf.ed.ac.uk/stg/powergrab/"
 				+ year + "/" + month + "/" + day + "/powergrabmap.geojson";
@@ -62,7 +62,7 @@ public class MapLoader {
 	
 	// testing
 	public static void main(String[] args) {
-		PowerGrabMap map = MapLoader.load("05", "05", "2019");
+		PowerGrabMap map = MapCreator.create("05", "05", "2019");
 		map.addDronePath(new Position(55.944425, -3.188396), new Position(55.945, -3.187));
 		map.addDronePath(new Position(55.945, -3.187), new Position(55.946233, -3.192473));
 		map.addDronePath(new Position(55.946233, -3.192473), new Position(55.946233, -3.184319));
@@ -75,6 +75,15 @@ public class MapLoader {
 		Move move1 = new Move(new Position(55.944425, -3.188396), Direction.SSE, new Position(55.944147836140246, -3.1882811949702905), 0.0	, 248.75);
 		movementLog.addMove(move1);
 		movementLog.writeLog("05", "05", "2019", "stateless");
+		
+		ChargingStation cS = map.getChargingStations().get(0);
+		System.out.println("cS coins: " + cS.getCoins());
+		Drone d = new StatelessDrone(new Position(0,0), 0);
+		System.out.println("d coins: " + d.getCoins());
+		d.charge(cS);
+		System.out.println("cS coins: " + cS.getCoins());
+		System.out.println("d coins: " + d.getCoins());
+		System.out.println(map.getChargingStations().get(0).getCoins());
 	}
 	
 }

@@ -1,8 +1,8 @@
 package uk.ac.ed.inf.powergrab;
 
-public class DroneLoader {
+public class DroneCreator {
 
-	public static Drone load(String initLatitudeAsString, String initLongitudeAsString, String seedAsString, String droneVersion) {
+	public static Drone create(String initLatitudeAsString, String initLongitudeAsString, String seedAsString, String droneVersion) {
 		// needs exception handling? where
 		// assert drone in game area
 		double initLatitude = Double.parseDouble(initLatitudeAsString);

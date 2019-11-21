@@ -15,7 +15,8 @@ public class PowerGrabMap {
 	
 	private List<Feature> mapFeatures;
 	LineString dronePath = LineString.fromLngLats(new ArrayList<Point>());
-	List<ChargingStation> chargingStations = new ArrayList<ChargingStation>(50);
+	//private??
+	private List<ChargingStation> chargingStations = new ArrayList<ChargingStation>(50);
 	
 	public PowerGrabMap(FeatureCollection f) {
 		mapFeatures = f.features();
@@ -31,15 +32,8 @@ public class PowerGrabMap {
 		}
 	}
 
-	public List<ChargingStation> calculateNearbyStations(Position dronePosition) {
-		List<ChargingStation> nearbyStations = new ArrayList<ChargingStation>();
-		for (ChargingStation chargingStation : this.chargingStations) {
-			// Need game parameters
-			if (Position.calculateDistance(chargingStation.getPosition(), dronePosition) < (0.0003 + 0.00025)) {
-				nearbyStations.add(chargingStation);
-			}
-		}
-		return nearbyStations;
+	public List<ChargingStation> getChargingStations() {
+		return chargingStations;
 	}
 
 //	public ChargingStation closestStation(Position p) {
@@ -70,5 +64,5 @@ public class PowerGrabMap {
 			e.printStackTrace();
 		}
 	}
-	
+
 }

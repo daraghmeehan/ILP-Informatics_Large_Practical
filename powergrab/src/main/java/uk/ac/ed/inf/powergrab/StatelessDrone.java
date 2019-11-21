@@ -1,5 +1,6 @@
 package uk.ac.ed.inf.powergrab;
 
+import java.util.List;
 import javafx.util.Pair;
 
 public class StatelessDrone extends Drone {
@@ -8,17 +9,14 @@ public class StatelessDrone extends Drone {
 		super(position, seed);
 	}
 	
-	public Move makeMove(PowerGrabMap map) {
-		Position positionBefore = this.position;
-		Pair<Direction, ChargingStation> directionAndChargingStation;
-		charge(chargingStation);
-		System.out.println(chargingStation == null);
-		return null;
+	@Override
+	public Direction chooseDirection(List<ChargingStation> chargingStations) {
+		return super.chooseRandomDirection(chargingStations);
 	}
 	
 	public static void main(String[] args) {
 		Drone d = new StatelessDrone(new Position(0,0), 0);
 		d.makeMove(null);
 	}
-
+	
 }
