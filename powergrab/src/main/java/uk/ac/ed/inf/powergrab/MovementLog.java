@@ -11,9 +11,7 @@ public class MovementLog {
 	
 	private List<Move> movementLog = new ArrayList<Move>();
 	
-	public MovementLog() {
-		
-	}
+	public MovementLog() {}
 	
 	public void addMove(Move move) {
 		movementLog.add(move);

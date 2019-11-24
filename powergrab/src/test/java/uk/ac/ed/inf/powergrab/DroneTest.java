@@ -3,22 +3,42 @@ package uk.ac.ed.inf.powergrab;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
 import java.util.List;
+import java.util.ArrayList;
 
 public class DroneTest {
 
 	@Test
 	public void testCalculateAvailableDirections() {
-		Drone d = new StatelessDrone(new Position(55.944,-3.18432), 40);
-		List<Direction> l = d.calculateAvailableDirections();
+		Drone d1 = new StatelessDrone(new Position(55.944,-3.18432), 0);
+		List<Direction> l = d1.calculateAvailableDirections();
 		for (Direction dir : l) {
-			System.out.println(dir.toString());
+//			System.out.println(dir.toString());
 		}
+		
+		Drone d2 = new StatelessDrone(new Position(0, 0), 0);
+		assertTrue(d2.calculateAvailableDirections().size() == 0);
 	}
 	
 	@Test
 	public void testCalculateClosestStation() {
+		Drone d = new StatelessDrone(new Position(0, 0), 0);
+		List<ChargingStation> chargingStations1 = new ArrayList<ChargingStation>();
+//		List<ChargingStation> chargingStations2 = new ArrayList<ChargingStation>();
 		
+		chargingStations1.add(new ChargingStation(new Position(1, 1), 0, 0));
+		chargingStations1.add(new ChargingStation(new Position(-0.5, 1), 0, 0));
+		chargingStations1.add(new ChargingStation(new Position(1, 1.5), 0, 0));
+		chargingStations1.add(new ChargingStation(new Position(-1, 1.3), 0, 0));
+		
+		assertTrue(d.calculateClosestStation(d.getPosition(), chargingStations1).equals(chargingStations1.get(1)));
+		chargingStations1.remove(1);
+		assertTrue(d.calculateClosestStation(d.getPosition(), chargingStations1).equals(chargingStations1.get(0)));
+		chargingStations1.remove(0);
+		assertTrue(d.calculateClosestStation(d.getPosition(), chargingStations1).equals(chargingStations1.get(1)));
+		chargingStations1.remove(1);
+		assertTrue(d.calculateClosestStation(d.getPosition(), chargingStations1).equals(chargingStations1.get(0)));
 	}
 
 	@Test

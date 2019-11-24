@@ -25,6 +25,10 @@ public class Position {
 		return this.longitude;
 	}
 	
+	public boolean equals(Position p) {
+		return (this.latitude == p.getLatitude() && this.longitude == p.getLongitude());
+	}
+	
 	public Position nextPosition(Direction direction) {
 		
 		switch(direction) {
@@ -74,6 +78,12 @@ public class Position {
 		double latitudeDifference = p1.latitude - p2.latitude;
 		double longitudeDifference = p1.longitude - p2.longitude;
 		return Math.sqrt(latitudeDifference*latitudeDifference + longitudeDifference*longitudeDifference);
+	}
+	
+	// for testing/debugging
+	@Override
+	public String toString() {
+		return "Latitude: " + this.latitude + " Longitude: " + this.longitude;
 	}
 	
 }

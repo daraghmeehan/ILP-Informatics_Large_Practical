@@ -5,7 +5,7 @@ import java.util.List;
 public class PowerGrabImpl implements PowerGrab { // Do I need an interface?
 	
 	// do I need this/is this the best way?
-	private boolean gameSetup = false;
+	private boolean gameSetupSuccessful = false;
 	
 	private String day;
 	private String month;
@@ -28,17 +28,21 @@ public class PowerGrabImpl implements PowerGrab { // Do I need an interface?
 		this.day = args[0];
 		this.month = args[1];
 		this.year = args[2];
+		// need?
+		String initLatitudeAsString = args[3];
+		String initLongitudeAsString = args[4];
+		String seedAsString = args[5];
 		this.droneVersion = args[6];
 		// needs exception handling
 		boolean successfulDroneLoad = true; //necessary?
 		boolean successfulMapLoad = true;
 		// name these args?
-		this.drone = DroneCreator.create(args[3], args[4], args[5], args[6]);
+		this.drone = DroneCreator.create(initLatitudeAsString, initLongitudeAsString, seedAsString, droneVersion);
 		this.map = MapCreator.create(day, month, year);
 		movementLog = new MovementLog();
 //		this.PowerStations = map.getPowerStations;
 		if (successfulDroneLoad && successfulMapLoad) {
-			gameSetup = true;
+			gameSetupSuccessful = true;
 		}
 	}
 	
@@ -46,7 +50,7 @@ public class PowerGrabImpl implements PowerGrab { // Do I need an interface?
 	public void play() {
 		//here?
 		List<ChargingStation> chargingStations = map.getChargingStations();
-		if (gameSetup) {
+		if (gameSetupSuccessful) {
 			while (movesMade < 250) {
 				if (drone.canMove()) {
 					Move move = drone.makeMove(chargingStations);
@@ -64,7 +68,7 @@ public class PowerGrabImpl implements PowerGrab { // Do I need an interface?
 	
 	@Override
 	public void report() {
-		if (gameSetup) {
+		if (gameSetupSuccessful) {
 			movementLog.writeLog(day, month, year, droneVersion);
 			map.createGeoJSONMap(day, month, year, droneVersion);
 		}
