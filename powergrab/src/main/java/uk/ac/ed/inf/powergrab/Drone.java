@@ -7,20 +7,16 @@ import javafx.util.Pair;
 public abstract class Drone {
 	
 	private Position position;
-	//private??
 	private double coins;
 	private double power;
-//	int seed;
 	private Random rnd;
 	
 	public Drone(Position position, int seed) {
 		this.position = position;
-//		this.seed = seed;
 		// game parameters
 		this.coins = 0;
 		this.power = 250;
 		this.rnd = new Random(seed);
-		// set in game parameters
 	}
 	
 	public Position getPosition() {
@@ -56,7 +52,7 @@ public abstract class Drone {
 //		System.out.println("After: " + positionAfter.toString());
 		
 		// doesn't change map's station values?
-		ChargingStation closestStation = this.calculateClosestStation(positionAfter, chargingStations);
+		ChargingStation closestStation = Drone.calculateClosestStation(positionAfter, chargingStations);
 //		System.out.println("Distance to closestStation = " + Position.calculateDistance(positionAfter, closestStation.getPosition()));
 		// game parameters
 		if (closestStation.isInRange(this.position)) {
@@ -88,7 +84,7 @@ public abstract class Drone {
 		} else {
 			for (Direction d : availableDirections) {
 				Position newPosition = this.position.nextPosition(d);
-				ChargingStation closestStation = this.calculateClosestStation(newPosition, nearbyStations);
+				ChargingStation closestStation = Drone.calculateClosestStation(newPosition, nearbyStations);
 				if (closestStation.isInRange(newPosition)) {
 					double coins = closestStation.getCoins();
 					// how sophisticated needed?
@@ -133,7 +129,7 @@ public abstract class Drone {
 		
 	}
 	
-	public ChargingStation calculateClosestStation(Position position, List<ChargingStation> chargingStations) {
+	public static ChargingStation calculateClosestStation(Position position, List<ChargingStation> chargingStations) {
 		
 		ChargingStation closestStation;
 		
@@ -203,14 +199,5 @@ public abstract class Drone {
 		chargingStation.transferCoins(coinsTransfer);
 		chargingStation.transferPower(powerTransfer);
 	}
-	
-//	testing
-//	public static void main(String[] args) {
-//		Drone d = new Drone(new Position(55.944,-3.18432), 40);
-//		List<Direction> l = d.calculateAvailableMoves();
-//		for (Direction dir : l) {
-//			System.out.println(dir.toString());
-//		}
-//	}
-	
+
 }

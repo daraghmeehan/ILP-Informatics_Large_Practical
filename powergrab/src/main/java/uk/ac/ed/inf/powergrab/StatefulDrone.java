@@ -19,8 +19,9 @@ public class StatefulDrone extends Drone {
 	
 	public Direction chooseDirection(List<ChargingStation> chargingStations) {
 		
-		if (this.isStrategyChosen()) {
+		if (!this.isStrategyChosen()) {
 			this.formBestStrategy(chargingStations);
+			strategyChosen = true;
 		}
 		
 		if (nextMoves.size() != 0) {
@@ -31,29 +32,86 @@ public class StatefulDrone extends Drone {
 	}
 
 	public void formBestStrategy(List<ChargingStation> chargingStations) {
-		List<ChargingStation> testStations1 = new ArrayList<ChargingStation>(chargingStations);
-		List<ChargingStation> testStations2 = new ArrayList<ChargingStation>(chargingStations);
+		
+		List<ChargingStation> stationsCopy1 = new ArrayList<ChargingStation>(chargingStations);
+		List<ChargingStation> stationsCopy2 = new ArrayList<ChargingStation>(chargingStations);
+		
+		PowerGrabSimulation nnSimulation = new NearestNeighbourSimulation(this.getPosition(), stationsCopy1);
+		nnSimulation.setup();
+		nnSimulation.play();
+		nnSimulation.report();
+		double nnResult = nnSimulation.getResult();
+		List<Direction> nnMoves = nnSimulation.getMoves();
+		int nnMoveCount = nnMoves.size();
+		
+		PowerGrabSimulation nnOptimisedSimulation = new NearestNeighbourOptimisedSimulation(this.getPosition(), stationsCopy2);
+		nnOptimisedSimulation.setup();
+		nnOptimisedSimulation.play();
+		nnOptimisedSimulation.report();
+		double nnOptimisedResult = nnOptimisedSimulation.getResult();
+		List<Direction> nnOptimisedMoves = nnOptimisedSimulation.getMoves();
+		int nnOptimisedMoveCount = nnOptimisedMoves.size();
+		
+		List<Direction> bestStrategyMoves;
+		
+		// turn into method!
+		// instead calculate better move count?
+		if (nnMoveCount < 250 || nnOptimisedMoveCount < 250) {
+			if (nnMoveCount < nnOptimisedMoveCount) {
+				System.out.println("Nearest Neighbour was better");
+				bestStrategyMoves = nnMoves;
+			} else {
+				System.out.println("Nearest Neighbour Optimised was better");
+				bestStrategyMoves = nnOptimisedMoves;
+			}
+		} else {
+			if (nnResult > nnOptimisedResult) {
+				System.out.println("Nearest Neighbour was better");
+				bestStrategyMoves = nnMoves;			
+			} else {
+				System.out.println("Nearest Neighbour Optimised was better");
+				bestStrategyMoves = nnOptimisedMoves;
+			}
+			
+		}
+		
+		nextMoves.addAll(bestStrategyMoves);
 	}
 	
 	// A* search
-	public List<Direction> findShortestPath(Position startPosition, Position goalPosition) {
+	public static List<Direction> findShortestPath(Position startPosition, Position goalPosition, List<ChargingStation> badStations) {
 		
-//		List<Direction> moves = new ArrayList<Direction>();
+//		System.out.println("Finding shortest path between " + startPosition.toString() + " and " + goalPosition.toString());
+		
+		// node to g-score
 		TreeMap<Node, Integer> openSet = new TreeMap<Node, Integer>(new NodeComparator());
 		List<Node> closedSet = new ArrayList<Node>();
 
 		Node startNode = new Node(startPosition, new ArrayList<Direction>(), goalPosition);
-		//		startNode.calculateF
 		openSet.put(startNode, 0);
 
 		while (!openSet.isEmpty()) {
-			Node current = openSet.firstKey();
-			if (current.reachedGoal(goalPosition)) {
+			Node current = openSet.pollFirstEntry().getKey();
+			
+			//testing
+//			System.out.println("Current node position: " + current.getPosition().toString());
+//			System.out.println("Current node f-score so far: " + current.getFScore());
+//			System.out.print("Current node path so far: ");
+//			for (Direction d : current.getPath()) {
+//				System.out.print(d + " ");		
+//			}
+//			System.out.println("");
+			
+			if (current.reachedGoal(goalPosition) && !(current.getPath().size() == 0)) {
+//				System.out.println("Reached goal!");
+//				System.out.println("Path length = " + current.getPath().size());
 				return current.getPath();
 			}
 
 			for (Node neighbour : current.getNeighbours(goalPosition)) {
-				if (closedSet.contains(neighbour)) {
+				// what happens if all neighbours are negative?
+				// but getNeighbours never returns negative results?
+				if (closedSet.contains(neighbour) || StatefulDrone.isAtNegativeStation(neighbour.getPosition(), badStations)) {
 					continue;
 				}
 
@@ -67,9 +125,8 @@ public class StatefulDrone extends Drone {
 						openSet.put(neighbour, tentativeGScore);
 					}
 				}
-
-				closedSet.add(current);
 			}
+			closedSet.add(current);
 		}
 		// need to check if null returned!
 		return null;
@@ -78,6 +135,65 @@ public class StatefulDrone extends Drone {
 	// admissible and consistent?
 	public static double aStarHeuristic(Position currentPosition, Position goalPosition) {
 		return Position.calculateDistance(currentPosition, goalPosition);
+	}
+	
+	// should be in Drone?
+	public static boolean isAtNegativeStation(Position position, List<ChargingStation> badStations) {
+		
+		for (ChargingStation badStation : badStations) {
+			if (badStation.isInRange(position)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	public static List<ChargingStation> calculatePositiveStations(List<ChargingStation> testStations) {
+
+		
+		List<ChargingStation> positiveStations = new ArrayList<ChargingStation>();
+		
+		for (ChargingStation chargingStation : testStations) {
+			if (chargingStation.isPositive()) {
+				positiveStations.add(chargingStation);
+			}
+		}
+		
+		return positiveStations;
+	}
+	
+	public static List<ChargingStation> calculateNegativeStations(List<ChargingStation> testStations) {
+
+		List<ChargingStation> negativeStations = new ArrayList<ChargingStation>();
+		
+		for (ChargingStation chargingStation : testStations) {
+			if (chargingStation.isNegative()) {
+				negativeStations.add(chargingStation);
+			}
+		}
+		
+		return negativeStations;
+	}
+	
+	public static double[][] calculateDistanceMatrix(List<Position> positions) {
+		
+		int n = positions.size();
+		double[][] distanceMatrix = new double[n][n];
+		
+		for (int i = 0; i < n; i++) {
+			for (int j = i; j < n; j++) {
+				if (i == j) {
+					distanceMatrix[i][j] = Double.POSITIVE_INFINITY;
+				} else {
+					double distance = Position.calculateDistance(positions.get(i), positions.get(j));
+					distanceMatrix[i][j] = distance;
+					distanceMatrix[j][i] = distance;
+				}
+			}
+		}
+		
+		return distanceMatrix;
 	}
 	
 }

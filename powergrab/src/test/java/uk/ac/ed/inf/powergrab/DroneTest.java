@@ -12,13 +12,13 @@ public class DroneTest {
 	@Test
 	public void testCalculateAvailableDirections() {
 		Drone d1 = new StatelessDrone(new Position(55.944,-3.18432), 0);
-		List<Direction> l = d1.calculateAvailableDirections();
+		List<Direction> l = Drone.calculateAvailableDirections(d1.getPosition());
 		for (Direction dir : l) {
 //			System.out.println(dir.toString());
 		}
 		
 		Drone d2 = new StatelessDrone(new Position(0, 0), 0);
-		assertTrue(d2.calculateAvailableDirections().size() == 0);
+		assertTrue(Drone.calculateAvailableDirections(d2.getPosition()).size() == 0);
 	}
 	
 	@Test

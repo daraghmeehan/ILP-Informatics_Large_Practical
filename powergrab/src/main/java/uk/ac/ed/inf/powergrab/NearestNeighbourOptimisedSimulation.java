@@ -1,0 +1,227 @@
+package uk.ac.ed.inf.powergrab;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
+public class NearestNeighbourOptimisedSimulation implements PowerGrabSimulation {
+	
+	private boolean gameSetup = false;
+	
+	private int movesMade = 0;
+	private Position dronePosition;
+	
+	private List<ChargingStation> chargingStations;
+	
+	private List<ChargingStation> positiveStations;
+	private List<Position> routePositions = new ArrayList<Position>();
+	private int[] stationOrder;
+	// need to get this to work for better optimisation
+	private int[] visitedPositiveStations;
+//	private int[] optimisedStationOrder;
+	
+	private List<ChargingStation> negativeStations;
+	
+	private double[][] distanceMatrix;
+	
+	private List<Direction> nextMoves = new ArrayList<Direction>();;
+	private double result = 0;
+	private List<Direction> totalMoves = new ArrayList<Direction>();
+	
+	public NearestNeighbourOptimisedSimulation(Position startingPosition, List<ChargingStation> testStations) {
+		this.dronePosition = startingPosition;
+		this.chargingStations = testStations;
+	}
+	
+	@Override
+	public void setup() {
+		this.positiveStations = StatefulDrone.calculatePositiveStations(this.chargingStations);
+		
+		routePositions.add(this.dronePosition);
+		for (ChargingStation positiveStation : positiveStations) {
+			routePositions.add(positiveStation.getPosition());
+		}
+		
+		this.negativeStations = StatefulDrone.calculateNegativeStations(this.chargingStations);
+		
+		this.distanceMatrix = StatefulDrone.calculateDistanceMatrix(routePositions);
+		this.calculateNearestNeighbourOrder();
+		System.out.println("Estimated distance before optimisation: "
+				+ NearestNeighbourOptimisedSimulation.calculateTotalRouteDistance(stationOrder, distanceMatrix));
+		this.twoOptOptimise();
+		System.out.println("Estimated distance after optimisation: "
+				+ NearestNeighbourOptimisedSimulation.calculateTotalRouteDistance(stationOrder, distanceMatrix));
+		
+		this.gameSetup = true;
+	}
+
+	@Override
+	public void play() {
+		if (this.gameSetup) {
+			// moves made later in logic
+			for (int index = 0; index < stationOrder.length; index++) {
+				ChargingStation nextStation = positiveStations.get(stationOrder[index]);
+				List<Direction> pathToNextStation = StatefulDrone.findShortestPath(
+						this.dronePosition, nextStation.getPosition(), negativeStations);
+				//// testing
+				// what should do here?
+				if (pathToNextStation == null) {
+					return;
+				}
+				nextMoves.addAll(pathToNextStation);
+				
+				while (nextMoves.size() > 0) {
+					if (movesMade >= 250) {
+						return;
+					} else {
+						Direction nextMove = nextMoves.remove(0);
+						dronePosition = dronePosition.nextPosition(nextMove);
+						totalMoves.add(nextMove);
+						movesMade++;
+					}
+				}
+				// System.out.println("Total move count: " + totalMoves.size());
+				result += nextStation.getCoins();
+				// System.out.println("Total coins so far: " + result);
+			}
+		}
+	}
+
+	@Override
+	public void report() {
+		if (this.gameSetup) {
+			System.out.println("Nearest Neighbour Optimised Simulation coins: " + result);
+			System.out.println("Nearest Neighbour Optimised Simulation total move count: " + totalMoves.size());
+		}
+	}
+	
+	@Override
+	public double getResult() {
+		return this.result;
+	}
+	
+	@Override
+	public List<Direction> getMoves() {
+		return this.totalMoves;
+	}
+	
+	public static double calculateTotalRouteDistance(int[] stationOrder, double[][] distanceMatrix) {
+		
+		int numberOfStations = stationOrder.length;
+		double distance = 0;
+		distance += distanceMatrix[0][stationOrder[0] + 1];
+		
+		for (int stationNumber = 0; stationNumber < numberOfStations - 1; stationNumber++) {
+			int firstStation = stationOrder[stationNumber];
+			int secondStation = stationOrder[stationNumber + 1];
+			distance += distanceMatrix[firstStation + 1][secondStation + 1];
+		}
+		
+		return distance;
+	}
+	
+	private void calculateNearestNeighbourOrder() {
+		
+		int n = positiveStations.size();
+		this.stationOrder = new int[n];
+		boolean[] visitedStations = new boolean[n];
+		
+		int initialMinStation = 0;
+		double initialMinDistance = distanceMatrix[0][0];
+		
+		for (int stationNumber = 0; stationNumber < n; stationNumber++) {
+			double distance = distanceMatrix[0][stationNumber + 1];
+			if (distance < initialMinDistance) {
+				initialMinStation = stationNumber;
+				initialMinDistance = distance;
+			}
+		}
+		stationOrder[0] = initialMinStation;
+		visitedStations[initialMinStation] = true;
+		
+		for (int stationOrderIndex = 0; stationOrderIndex < n - 1; stationOrderIndex++) {
+			int currentStation = stationOrder[stationOrderIndex];
+			
+			int minStation = currentStation;
+			double minDistance = distanceMatrix[currentStation + 1][currentStation + 1];
+			
+			for (int stationNumber = 0; stationNumber < n; stationNumber++) {
+				if (visitedStations[stationNumber]) {
+					continue;
+				}
+				double distance = distanceMatrix[currentStation + 1][stationNumber + 1];
+				if (distance < minDistance) {
+					minStation = stationNumber;
+					minDistance = distance;
+				}
+			}
+			
+			stationOrder[stationOrderIndex + 1] = minStation;
+			visitedStations[minStation] = true;
+		}
+	}
+	
+	private void twoOptOptimise() {
+		
+		int n = stationOrder.length;
+		double bestDistance = NearestNeighbourOptimisedSimulation.calculateTotalRouteDistance(stationOrder, distanceMatrix);
+		
+		while (true) {
+			boolean improvementMade = false;
+			
+			currentIteration:
+				for (int i = 1; i < n - 1; i++) {
+					for (int j = i + 1; j < n; j++) {
+						int[] newOrder = NearestNeighbourOptimisedSimulation.twoOptSwap(stationOrder, i, j);
+						double newDistance = NearestNeighbourOptimisedSimulation.calculateTotalRouteDistance(newOrder, distanceMatrix);
+						if (newDistance < bestDistance) {
+							stationOrder = newOrder;
+							bestDistance = newDistance;
+//							System.out.println("New best distance: " + bestDistance);
+							improvementMade = true;
+							break currentIteration;
+						}
+				}
+			}
+			if (!improvementMade) {
+				return;
+			}
+		}
+	}
+	
+	private static int[] twoOptSwap(int[] order, int i, int j) {
+		
+		int n = order.length;
+		
+		if (i <= 0 || j <= i || j >= n - 1) {
+			return order;
+		}
+		
+		List<Integer> newRoute = new ArrayList<Integer>(n);
+		
+		// can be optimised!
+		for (int x : Arrays.copyOfRange(order, 0, i)) {
+			newRoute.add(x);
+		}
+		
+		List<Integer> toReverse = new ArrayList<Integer>();
+		for (int x : Arrays.copyOfRange(order, i, j + 1)) {
+			toReverse.add(x);
+		}
+		Collections.reverse(toReverse);
+		newRoute.addAll(toReverse);
+		
+		for (int x : Arrays.copyOfRange(order, j + 1, n)) {
+			newRoute.add(x);
+		}
+		
+		int[] newOrder = new int[n];
+		
+		for (int k = 0; k < n; k++) {
+			newOrder[k] = newRoute.get(k);
+		}
+		return newOrder;
+	}
+
+}

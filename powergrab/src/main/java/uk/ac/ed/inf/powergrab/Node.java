@@ -15,7 +15,7 @@ public class Node {
 		this.path = path;
 		this.gScore = path.size();
 //		 should this be here instead of drone?
-		this.fScore = this.gScore + StatefulDrone.aStarHeuristic(this.position, goalPosition);
+		this.fScore = this.gScore + StatefulDrone.aStarHeuristic(this.position, goalPosition)/0.0003;
 	}
 	
 
@@ -33,7 +33,7 @@ public class Node {
 	}
 	
 	public int getGScore() {
-		return this.getGScore();
+		return this.gScore;
 	}
 	
 	public boolean reachedGoal(Position goalPosition) {
