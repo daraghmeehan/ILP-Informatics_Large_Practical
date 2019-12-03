@@ -40,7 +40,7 @@ public class StatefulDrone extends Drone {
 		nnSimulation.setup();
 		nnSimulation.play();
 		nnSimulation.report();
-		double nnResult = nnSimulation.getResult();
+		float nnResult = nnSimulation.getResult();
 		List<Direction> nnMoves = nnSimulation.getMoves();
 		int nnMoveCount = nnMoves.size();
 		
@@ -48,7 +48,7 @@ public class StatefulDrone extends Drone {
 		nnOptimisedSimulation.setup();
 		nnOptimisedSimulation.play();
 		nnOptimisedSimulation.report();
-		double nnOptimisedResult = nnOptimisedSimulation.getResult();
+		float nnOptimisedResult = nnOptimisedSimulation.getResult();
 		List<Direction> nnOptimisedMoves = nnOptimisedSimulation.getMoves();
 		int nnOptimisedMoveCount = nnOptimisedMoves.size();
 		
@@ -56,7 +56,7 @@ public class StatefulDrone extends Drone {
 		
 		// turn into method!
 		// instead calculate better move count?
-		if (nnMoveCount < 250 || nnOptimisedMoveCount < 250) {
+		if ((int) nnResult == (int) nnOptimisedResult) {
 			if (nnMoveCount < nnOptimisedMoveCount) {
 				System.out.println("Nearest Neighbour was better");
 				bestStrategyMoves = nnMoves;
@@ -78,9 +78,9 @@ public class StatefulDrone extends Drone {
 		nextMoves.addAll(bestStrategyMoves);
 	}
 	
-	// A* search
+	// A* search // need a way of failing to get to a station
+	// need to check if can go through a bad station to get more coins overall
 	public static List<Direction> findShortestPath(Position startPosition, Position goalPosition, List<ChargingStation> badStations) {
-		
 //		System.out.println("Finding shortest path between " + startPosition.toString() + " and " + goalPosition.toString());
 		
 		// node to g-score
@@ -89,8 +89,12 @@ public class StatefulDrone extends Drone {
 
 		Node startNode = new Node(startPosition, new ArrayList<Direction>(), goalPosition);
 		openSet.put(startNode, 0);
+		
+		int nodesChecked = 0;
 
-		while (!openSet.isEmpty()) {
+		// right amount of nodes checked?
+		while (!openSet.isEmpty() && nodesChecked < 300) {
+			
 			Node current = openSet.pollFirstEntry().getKey();
 			
 			//testing
@@ -105,6 +109,7 @@ public class StatefulDrone extends Drone {
 			if (current.reachedGoal(goalPosition) && !(current.getPath().size() == 0)) {
 //				System.out.println("Reached goal!");
 //				System.out.println("Path length = " + current.getPath().size());
+//				System.out.println("Nodes checked: " + nodesChecked);
 				return current.getPath();
 			}
 
@@ -127,6 +132,7 @@ public class StatefulDrone extends Drone {
 				}
 			}
 			closedSet.add(current);
+			nodesChecked++;
 		}
 		// need to check if null returned!
 		return null;

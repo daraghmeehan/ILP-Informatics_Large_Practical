@@ -20,8 +20,7 @@ public class MovementLog {
 	public void writeLog(String day, String month, String year, String droneVersion) {
 		String fileName = droneVersion + "-" + day + "-" + month + "-" + year + ".txt";
 		
-		try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(
-				"src" + File.separator + "Output Files" + File.separator + fileName), false))) {
+		try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(fileName), false))) {
 		    for (Move move : movementLog) {
 		    	out.println(move.toString());
 		    }

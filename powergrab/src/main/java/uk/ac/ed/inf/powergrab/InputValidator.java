@@ -1,7 +1,9 @@
 package uk.ac.ed.inf.powergrab;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.*;
-//import java.util.;
 
 public class InputValidator {
 	
@@ -14,7 +16,49 @@ public class InputValidator {
 		
 		boolean validInput = true;
 		
-//		boolean isDay = args[0].matches(regex)
+		String day = args[0];
+		String month = args[1];
+		String year = args[2];
+		String initLatitudeAsString = args[3];
+		String initLongitudeAsString = args[4];
+		String seedAsString = args[5];
+		String droneVersion = args[6];
+		
+		String date = day + "/" + month + "/" + year;
+		SimpleDateFormat sdfrmt = new SimpleDateFormat("dd/MM/yyyy");
+		sdfrmt.setLenient(false);
+		try {
+			sdfrmt.parse(date);
+		} catch (ParseException e) {
+			System.out.println("Date not in correct format. Need arguments DD MM YYYY");
+			validInput = false;
+		}
+		
+		try {
+			Float.parseFloat(initLatitudeAsString);
+		} catch (NumberFormatException e) {
+			System.out.println("Latitude argument is not in correct format. Needs to be a float");
+			validInput = false;
+		}
+
+		try {
+			Float.parseFloat(initLongitudeAsString);
+		} catch (NumberFormatException e) {
+			System.out.println("Longitude argument is not in correct format. Needs to be a float");
+			validInput = false;
+		}
+
+		try {
+			Integer.parseInt(seedAsString);
+		} catch (NumberFormatException e) {
+			System.out.println("Seed argument is not in correct format. Needs to be an integer");
+			validInput = false;
+		}
+		
+		if (!args[6].matches("stateless|stateful")) {
+			System.out.println("Drone version not in correct format. Needs to be \"stateless\" or \"stateful\"");
+			validInput = false;
+		}
 		
 		return validInput;
 	}

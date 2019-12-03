@@ -5,8 +5,7 @@ public class PowerGrabController {
 	public static void playPowerGrab(String[] args) {
 		
 		if (InputValidator.isValid(args)) {
-			PowerGrab powerGrab = new PowerGrabImpl(args,
-					new GameParameters(250, 0.0003, 55.946233, 55.942617, -3.184319, -3.192473, 1.25));
+			PowerGrab powerGrab = new PowerGrabImpl(args);
 			powerGrab.setup();
 			powerGrab.play();
 			powerGrab.report();

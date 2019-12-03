@@ -7,15 +7,14 @@ import javafx.util.Pair;
 public abstract class Drone {
 	
 	private Position position;
-	private double coins;
-	private double power;
-	private Random rnd;
+	private float coins;
+	private float power;
+	private final Random rnd;
 	
 	public Drone(Position position, int seed) {
 		this.position = position;
-		// game parameters
-		this.coins = 0;
-		this.power = 250;
+		this.coins = GameParameters.initialDroneCoins;
+		this.power = GameParameters.initialDronePower;
 		this.rnd = new Random(seed);
 	}
 	
@@ -23,21 +22,16 @@ public abstract class Drone {
 		return this.position;
 	}
 	
-	public double getCoins() {
+	public float getCoins() {
 		return this.coins;
 	}
 	
-	public double getPower() {
+	public float getPower() {
 		return this.power;
 	}
 	
 	public boolean canMove() {
 		return power >= 1.25;
-	}
-	
-	public void consumePower() {
-		// game params
-		this.power -= 1.25;
 	}
 	
 	public Move makeMove(List<ChargingStation> chargingStations) {
@@ -59,10 +53,14 @@ public abstract class Drone {
 			this.charge(closestStation);
 		}
 		
-		double coinsAfter = this.coins;
-		double powerAfter = this.power;
+		float coinsAfter = this.coins;
+		float powerAfter = this.power;
 		
 		return new Move(positionBefore, moveDirection, positionAfter, coinsAfter, powerAfter);
+	}
+	
+	private void consumePower() {
+		this.power -= GameParameters.movePowerCost;
 	}
 	
 	public abstract Direction chooseDirection(List<ChargingStation> chargingStations);
@@ -76,7 +74,7 @@ public abstract class Drone {
 		List<ChargingStation> nearbyStations = this.calculateNearbyStations(chargingStations);
 		
 		Direction bestMove = null;
-		double bestMoveCoins = Double.NEGATIVE_INFINITY;
+		float bestMoveCoins = Float.NEGATIVE_INFINITY;
 		List<Direction> neutralMoves = new ArrayList<Direction>();
 		
 		if (nearbyStations.size() == 0) {
@@ -86,7 +84,7 @@ public abstract class Drone {
 				Position newPosition = this.position.nextPosition(d);
 				ChargingStation closestStation = Drone.calculateClosestStation(newPosition, nearbyStations);
 				if (closestStation.isInRange(newPosition)) {
-					double coins = closestStation.getCoins();
+					float coins = closestStation.getCoins();
 					// how sophisticated needed?
 					if (bestMove == null) {
 						bestMove = d;
@@ -139,10 +137,10 @@ public abstract class Drone {
 			closestStation = chargingStations.get(0);
 			
 			if (chargingStations.size() > 1) {
-				double closestDistance = Position.calculateDistance(position, closestStation.getPosition());
+				double closestDistance = Position.calculateDistance(position, closestStation.position);
 				
 				for (ChargingStation chargingStation : chargingStations.subList(1, chargingStations.size())) {
-					double distance = Position.calculateDistance(position, chargingStation.getPosition());
+					double distance = Position.calculateDistance(position, chargingStation.position);
 					if (distance < closestDistance){
 						closestStation = chargingStation;
 						closestDistance = distance;
@@ -159,28 +157,29 @@ public abstract class Drone {
 		List<ChargingStation> nearbyStations = new ArrayList<ChargingStation>();
 		for (ChargingStation chargingStation : chargingStations) {
 			// Need game parameters (maybe with isInRange with variable parameters)
-			if (Position.calculateDistance(this.position, chargingStation.getPosition()) < (0.0003 + 0.00025)) {
+			if (Position.calculateDistance(this.position, chargingStation.position)
+					< (GameParameters.moveDistance + GameParameters.chargingDistance)) {
 				nearbyStations.add(chargingStation);
 			}
 		}
 		return nearbyStations;
 	}
 	
-	public Direction makeRandomChoice(List<Direction> directions) {
+	private Direction makeRandomChoice(List<Direction> directions) {
 		int n = directions.size();
 		int chosenDirection = rnd.nextInt(n);
 		return directions.get(chosenDirection);
 	}
 
-	public void charge(ChargingStation chargingStation) {
-		double maxCoinsToLose = - this.coins;
-		double maxPowerToLose = - this.power;
+	private void charge(ChargingStation chargingStation) {
+		float maxCoinsToLose = - this.coins;
+		float maxPowerToLose = - this.power;
 		
-		double stationCoins = chargingStation.getCoins();
-		double stationPower = chargingStation.getPower();
+		float stationCoins = chargingStation.getCoins();
+		float stationPower = chargingStation.getPower();
 		
-		double coinsTransfer;
-		double powerTransfer;
+		float coinsTransfer;
+		float powerTransfer;
 		
 		if (stationCoins < maxCoinsToLose) {
 			coinsTransfer = maxCoinsToLose;

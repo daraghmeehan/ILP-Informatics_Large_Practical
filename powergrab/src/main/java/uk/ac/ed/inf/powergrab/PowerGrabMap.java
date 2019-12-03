@@ -26,8 +26,8 @@ public class PowerGrabMap {
 			List<Double> coordinates = location.coordinates();
 			double latitude = coordinates.get(1);
 			double longitude = coordinates.get(0);
-			double coins = chargingStation.getProperty("coins").getAsDouble();
-			double power = chargingStation.getProperty("power").getAsDouble();
+			float coins = chargingStation.getProperty("coins").getAsFloat();
+			float power = chargingStation.getProperty("power").getAsFloat();
 			chargingStations.add(new ChargingStation(new Position(latitude, longitude), coins, power));
 		}
 	}
@@ -43,11 +43,11 @@ public class PowerGrabMap {
 	public void addDronePath(Position positionBefore, Position positionAfter) {
 		
 		if (this.dronePath.coordinates().size() == 0) {
-			Point coordinatesBefore = Point.fromLngLat(positionBefore.getLongitude(), positionBefore.getLatitude());
+			Point coordinatesBefore = Point.fromLngLat(positionBefore.longitude, positionBefore.latitude);
 			dronePath.coordinates().add(coordinatesBefore);
 		}
 		
-		Point coordinatesAfter = Point.fromLngLat(positionAfter.getLongitude(), positionAfter.getLatitude());
+		Point coordinatesAfter = Point.fromLngLat(positionAfter.longitude, positionAfter.latitude);
 		dronePath.coordinates().add(coordinatesAfter);			
 	}
 	
@@ -57,8 +57,7 @@ public class PowerGrabMap {
 		String mapJSON = mapFeatureCollection.toJson();
 		String fileName = droneVersion + "-" + day + "-" + month + "-" + year + ".geojson";
 		
-		try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(
-				"src" + File.separator + "Output Files" + File.separator + fileName), false))) {
+		try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(fileName), false))) {
 		    out.println(mapJSON);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

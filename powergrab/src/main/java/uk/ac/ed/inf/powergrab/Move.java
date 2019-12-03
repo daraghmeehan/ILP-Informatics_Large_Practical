@@ -10,15 +10,15 @@ public class Move {
 	Direction moveDirection;
 	private Position positionAfter;
 //	ChargingStation chargingStation;
-	double coinsAfter;
-	double powerAfter;
+	float coinsAfter;
+	float powerAfter;
 	
 	public Move(Direction direction, ChargingStation chargingStation) {
 		this.moveDirection = direction;
 //		this.chargingStation = chargingStation;
 	}
 	
-	public Move(Position positionBefore, Direction moveDirection, Position positionAfter, double coinsAfter, double powerAfter) {
+	public Move(Position positionBefore, Direction moveDirection, Position positionAfter, float coinsAfter, float powerAfter) {
 		this.positionBefore = positionBefore;
 		this.moveDirection = moveDirection;
 		this.positionAfter = positionAfter;
@@ -39,8 +39,8 @@ public class Move {
 		DecimalFormat df = new DecimalFormat("0.0",  DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 		df.setMaximumFractionDigits(340);
 		
-		return String.format("%s,%s,%s,%s,%s,%s,%s", df.format(positionBefore.getLatitude()), df.format(positionBefore.getLongitude()),
-				moveDirection.toString(), df.format(positionAfter.getLatitude()), df.format(positionAfter.getLongitude()),
+		return String.format("%s,%s,%s,%s,%s,%s,%s", df.format(positionBefore.latitude), df.format(positionBefore.longitude),
+				moveDirection.toString(), df.format(positionAfter.latitude), df.format(positionAfter.longitude),
 				df.format(coinsAfter), df.format(powerAfter));
 	}
 	

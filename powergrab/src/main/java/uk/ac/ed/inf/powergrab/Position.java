@@ -1,32 +1,25 @@
 package uk.ac.ed.inf.powergrab;
 
 public class Position {
-	private double latitude;
-	private double longitude;
 	
-	static double r = 0.0003;
-	static double w2 = r * Math.cos(Math.toRadians(67.5));
-	static double w3 = r * Math.cos(Math.toRadians(45));
-	static double w4 = r * Math.cos(Math.toRadians(22.5));
-	static double h2 = w4;
-	static double h3 = w3;
-	static double h4 = w2;
+	public final double latitude;
+	public final double longitude;
+	
+	private static double r = GameParameters.moveDistance;
+	private static double w2 = r * Math.cos(Math.toRadians(67.5));
+	private static double w3 = r * Math.cos(Math.toRadians(45));
+	private static double w4 = r * Math.cos(Math.toRadians(22.5));
+	private static double h2 = w4;
+	private static double h3 = w3;
+	private static double h4 = w2;
 	
 	public Position(double latitude, double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
 	
-	public double getLatitude() {
-		return this.latitude;
-	}
-	
-	public double getLongitude() {
-		return this.longitude;
-	}
-	
 	public boolean equals(Position p) {
-		return (this.latitude == p.getLatitude() && this.longitude == p.getLongitude());
+		return (this.latitude == p.latitude && this.longitude == p.longitude);
 	}
 	
 	public Position nextPosition(Direction direction) {
@@ -70,8 +63,8 @@ public class Position {
 	}
 	
 	public boolean inPlayArea() {
-		return (latitude > 55.942617) && (latitude < 55.946233)
-				&& (longitude > -3.192473) && (longitude < -3.184319);
+		return (latitude > GameParameters.minLatitude) && (latitude < GameParameters.maxLatitude)
+				&& (longitude > GameParameters.minLatitude) && (longitude < GameParameters.maxLongitude);
 	}
 	
 	public static double calculateDistance(Position p1, Position p2) {
@@ -83,7 +76,7 @@ public class Position {
 	// for testing/debugging
 	@Override
 	public String toString() {
-		return "Latitude: " + this.latitude + " Longitude: " + this.longitude;
+		return "Latitude: " + latitude + " Longitude: " + longitude;
 	}
 	
 }

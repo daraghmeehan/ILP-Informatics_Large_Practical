@@ -15,8 +15,8 @@ public class NearestNeighbourSimulation implements PowerGrabSimulation {
 	private List<ChargingStation> positiveStations;
 	private List<ChargingStation> negativeStations;
 	
-	private List<Direction> nextMoves = new ArrayList<Direction>();;
-	private double result = 0;
+	private List<Direction> nextMoves = new ArrayList<Direction>();
+	private float result = 0;
 	private List<Direction> totalMoves = new ArrayList<Direction>();
 	
 	public NearestNeighbourSimulation(Position startingPosition, List<ChargingStation> testStations) {
@@ -39,15 +39,17 @@ public class NearestNeighbourSimulation implements PowerGrabSimulation {
 			while (this.positiveStations.size() > 0) {
 				ChargingStation closestPositiveStation = Drone.calculateClosestStation(this.dronePosition, positiveStations);
 				List<Direction> pathToClosestPositiveStation = StatefulDrone.findShortestPath(
-						this.dronePosition, closestPositiveStation.getPosition(), negativeStations);
+						this.dronePosition, closestPositiveStation.position, negativeStations);
 //				//testing
 //				for (Direction d : pathToClosestPositiveStation) {
 //					System.out.println(d.toString());
 //				}
 				// what should do here?
 				if (pathToClosestPositiveStation == null) {
-					return;
+					positiveStations.remove(closestPositiveStation);
+					continue;
 				}
+				
 				nextMoves.addAll(pathToClosestPositiveStation);
 				
 				while (nextMoves.size() > 0) {
@@ -76,7 +78,7 @@ public class NearestNeighbourSimulation implements PowerGrabSimulation {
 		}
 	}
 	
-	public double getResult() {
+	public float getResult() {
 		// if 0?
 		return this.result;
 	}

@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface PowerGrabSimulation extends PowerGrab {
 	
-	public double getResult();
+	public float getResult();
 	public List<Direction> getMoves();
 	
 }
