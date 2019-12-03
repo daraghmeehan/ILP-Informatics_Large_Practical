@@ -11,15 +11,24 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 
-public class PowerGrabMap {
+/*
+ * Here the features of the GeoJSON representation of our PowerGrab map are stored, as well as our drone's flight path.
+ */
+public class Map {
 	
 	private List<Feature> mapFeatures;
-	LineString dronePath = LineString.fromLngLats(new ArrayList<Point>());
-	//private??
-	private List<ChargingStation> chargingStations = new ArrayList<ChargingStation>(50);
+	private LineString dronePath = LineString.fromLngLats(new ArrayList<Point>());
 	
-	public PowerGrabMap(FeatureCollection f) {
+	public Map(FeatureCollection f) {
 		mapFeatures = f.features();
+	}
+	
+	/*
+	 * Builds a list of charging stations from the features.
+	 */
+	public List<ChargingStation> getChargingStations() {
+		
+		List<ChargingStation> chargingStations = new ArrayList<ChargingStation>(50);
 		
 		for (Feature chargingStation : mapFeatures) {
 			Point location = (Point) chargingStation.geometry();
@@ -30,16 +39,13 @@ public class PowerGrabMap {
 			float power = chargingStation.getProperty("power").getAsFloat();
 			chargingStations.add(new ChargingStation(new Position(latitude, longitude), coins, power));
 		}
-	}
-
-	public List<ChargingStation> getChargingStations() {
+		
 		return chargingStations;
 	}
-
-//	public ChargingStation closestStation(Position p) {
-//		
-//	}
 	
+	/*
+	 * Adds a move to the drone's path.
+	 */
 	public void addDronePath(Position positionBefore, Position positionAfter) {
 		
 		if (this.dronePath.coordinates().size() == 0) {
@@ -51,6 +57,9 @@ public class PowerGrabMap {
 		dronePath.coordinates().add(coordinatesAfter);			
 	}
 	
+	/*
+	 * Builds a .geojson file from the charging station and drone path features.
+	 */
 	public void createGeoJSONMap(String day, String month, String year, String droneVersion) {
 		mapFeatures.add(Feature.fromGeometry(this.dronePath, new JsonObject()));
 		FeatureCollection mapFeatureCollection = FeatureCollection.fromFeatures(mapFeatures);

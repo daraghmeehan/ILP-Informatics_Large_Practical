@@ -53,13 +53,13 @@ public class NearestNeighbourSimulation implements PowerGrabSimulation {
 				nextMoves.addAll(pathToClosestPositiveStation);
 				
 				while (nextMoves.size() > 0) {
-					if (movesMade >= 250) {
-						return;
-					} else {
+					if (movesMade < GameParameters.MAX_MOVES) {
 						Direction nextMove = nextMoves.remove(0);
 						dronePosition = dronePosition.nextPosition(nextMove);
 						totalMoves.add(nextMove);
 						movesMade++;
+					} else {
+						return;
 					}
 				}
 //				System.out.println("Total move count: " + totalMoves.size());

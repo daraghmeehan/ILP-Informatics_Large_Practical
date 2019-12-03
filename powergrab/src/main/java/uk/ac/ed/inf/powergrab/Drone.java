@@ -1,9 +1,12 @@
 package uk.ac.ed.inf.powergrab;
 
-// Is this necessary here?
-import java.util.*;
-import javafx.util.Pair;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
 
+/*
+ * 
+ */
 public abstract class Drone {
 	
 	private Position position;
@@ -11,10 +14,10 @@ public abstract class Drone {
 	private float power;
 	private final Random rnd;
 	
-	public Drone(Position position, int seed) {
+	protected Drone(Position position, int seed) {
 		this.position = position;
-		this.coins = GameParameters.initialDroneCoins;
-		this.power = GameParameters.initialDronePower;
+		this.coins = GameParameters.INITIAL_DRONE_COINS;
+		this.power = GameParameters.INITIAL_DRONE_POWER;
 		this.rnd = new Random(seed);
 	}
 	
@@ -31,7 +34,7 @@ public abstract class Drone {
 	}
 	
 	public boolean canMove() {
-		return power >= 1.25;
+		return power >= GameParameters.MOVE_POWER_COST;
 	}
 	
 	public Move makeMove(List<ChargingStation> chargingStations) {
@@ -60,7 +63,7 @@ public abstract class Drone {
 	}
 	
 	private void consumePower() {
-		this.power -= GameParameters.movePowerCost;
+		this.power -= GameParameters.MOVE_POWER_COST;
 	}
 	
 	public abstract Direction chooseDirection(List<ChargingStation> chargingStations);
@@ -158,7 +161,7 @@ public abstract class Drone {
 		for (ChargingStation chargingStation : chargingStations) {
 			// Need game parameters (maybe with isInRange with variable parameters)
 			if (Position.calculateDistance(this.position, chargingStation.position)
-					< (GameParameters.moveDistance + GameParameters.chargingDistance)) {
+					< (GameParameters.MOVE_DISTANCE + GameParameters.CHARGING_DISTANCE)) {
 				nearbyStations.add(chargingStation);
 			}
 		}

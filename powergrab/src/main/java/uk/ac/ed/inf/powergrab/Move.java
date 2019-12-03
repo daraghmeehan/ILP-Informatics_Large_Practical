@@ -4,19 +4,17 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+/*
+ * Represents all the attributes of a drone's move.
+ * Provides functionality to format the move to be printed in a log of the moves.
+ */
 public class Move {
 	
-	private Position positionBefore;
-	Direction moveDirection;
-	private Position positionAfter;
-//	ChargingStation chargingStation;
-	float coinsAfter;
-	float powerAfter;
-	
-	public Move(Direction direction, ChargingStation chargingStation) {
-		this.moveDirection = direction;
-//		this.chargingStation = chargingStation;
-	}
+	public final Position positionBefore;
+	public final Direction moveDirection;
+	public final Position positionAfter;
+	public final float coinsAfter;
+	public final float powerAfter;
 	
 	public Move(Position positionBefore, Direction moveDirection, Position positionAfter, float coinsAfter, float powerAfter) {
 		this.positionBefore = positionBefore;
@@ -24,14 +22,6 @@ public class Move {
 		this.positionAfter = positionAfter;
 		this.coinsAfter = coinsAfter;
 		this.powerAfter = powerAfter;
-	}
-	
-	public Position getPositionBefore() {
-		return this.positionBefore;
-	}
-
-	public Position getPositionAfter() {
-		return this.positionAfter;
 	}
 	
 	@Override

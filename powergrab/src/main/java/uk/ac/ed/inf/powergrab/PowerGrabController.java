@@ -1,11 +1,14 @@
 package uk.ac.ed.inf.powergrab;
 
+/*
+ * This class controls the overall execution of the program.
+ */
 public class PowerGrabController {
 	
 	public static void playPowerGrab(String[] args) {
 		
 		if (InputValidator.isValid(args)) {
-			PowerGrab powerGrab = new PowerGrabImpl(args);
+			PowerGrab powerGrab = new PowerGrabGame(args);
 			powerGrab.setup();
 			powerGrab.play();
 			powerGrab.report();

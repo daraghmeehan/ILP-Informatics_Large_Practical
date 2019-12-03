@@ -4,10 +4,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
-/**
- * Unit test for PowerGrab App.  [JUnit 4 version]
- */
-public class AppTest {
+public class PositionTest {
 
     @Test
 	public void testPositionConstructor() {
@@ -18,12 +15,12 @@ public class AppTest {
 
     @Test
 	public void testPositionLatitude() {
-		assertTrue(p0.getLatitude() == 55.944425);
+		assertTrue(p0.latitude == 55.944425);
 	}
 
     @Test
 	public void testPositionLongitude() {
-		assertTrue(p0.getLongitude() == -3.188396);
+		assertTrue(p0.longitude == -3.188396);
 	}
 	
     @Test
@@ -50,7 +47,7 @@ public class AppTest {
 	}
 	
 	boolean approxEq(Position p0, Position p1) {
-		return approxEq(p0.getLatitude(), p1.getLatitude()) && approxEq(p0.getLongitude(), p1.getLongitude()); 
+		return approxEq(p0.latitude, p1.latitude) && approxEq(p0.longitude, p1.longitude); 
 	}
 	
     @Test
@@ -102,37 +99,37 @@ public class AppTest {
     @Test
 	public void testNEisNorthEast() {
 		Position p1 = p0.nextPosition(Direction.NE);
-		assertTrue(p1.getLatitude() > p0.getLatitude() && p1.getLongitude() > p0.getLongitude());
+		assertTrue(p1.latitude > p0.latitude && p1.longitude > p0.longitude);
 	}
 
     @Test
 	public void testNNEisNorthEast() {
 		Position p1 = p0.nextPosition(Direction.NNE);
-		assertTrue(p1.getLatitude() > p0.getLatitude() && p1.getLongitude() > p0.getLongitude());
+		assertTrue(p1.latitude > p0.latitude && p1.longitude > p0.longitude);
 	}
 
     @Test
 	public void testENEisNorthEast() {
 		Position p1 = p0.nextPosition(Direction.ENE);
-		assertTrue(p1.getLatitude() > p0.getLatitude() && p1.getLongitude() > p0.getLongitude());
+		assertTrue(p1.latitude > p0.latitude && p1.longitude > p0.longitude);
 	}
 	
     @Test
 	public void testSWisSouthWest() {
 		Position p1 = p0.nextPosition(Direction.SW);
-		assertTrue(p1.getLatitude() < p0.getLatitude() && p1.getLongitude() < p0.getLongitude());
+		assertTrue(p1.latitude < p0.latitude && p1.longitude < p0.longitude);
 	}
 
     @Test
 	public void testWSWisSouthWest() {
 		Position p1 = p0.nextPosition(Direction.WSW);
-		assertTrue(p1.getLatitude() < p0.getLatitude() && p1.getLongitude() < p0.getLongitude());
+		assertTrue(p1.latitude < p0.latitude && p1.longitude < p0.longitude);
 	}
 
     @Test
 	public void testSSWisSouthWest() {
 		Position p1 = p0.nextPosition(Direction.SSW);
-		assertTrue(p1.getLatitude() < p0.getLatitude() && p1.getLongitude() < p0.getLongitude());
+		assertTrue(p1.latitude < p0.latitude && p1.longitude < p0.longitude);
 	}
 
     @Test

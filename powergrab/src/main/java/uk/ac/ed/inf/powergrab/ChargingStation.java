@@ -1,5 +1,9 @@
 package uk.ac.ed.inf.powergrab;
 
+/*
+ * The charging stations of the PowerGrab map.
+ * Their position can't be changed, and their coins and power change when the drone charges from this station.
+ */
 public class ChargingStation {
 	
 	public final Position position;
@@ -20,6 +24,14 @@ public class ChargingStation {
 		return this.power;
 	}
 	
+	public void transferCoins(float coinsTransfer) {
+		this.coins -= coinsTransfer;
+	}
+	
+	public void transferPower(float powerTransfer) {
+		this.power -= powerTransfer;
+	}
+	
 	public boolean isPositive() {
 		return this.coins > 0;
 	}
@@ -32,18 +44,12 @@ public class ChargingStation {
 	public boolean isNeutral() {
 		return this.coins == 0;
 	}
-
+	
+	/*
+	 * Determines if a position is in range to charge from this station.
+	 */
 	public boolean isInRange(Position position) {
-		// game parameters
-		return Position.calculateDistance(this.position, position) < GameParameters.chargingDistance;
-	}
-
-	public void transferCoins(float coinsTransfer) {
-		this.coins -= coinsTransfer;
-	}
-
-	public void transferPower(float powerTransfer) {
-		this.power -= powerTransfer;
+		return Position.calculateDistance(this.position, position) < GameParameters.CHARGING_DISTANCE;
 	}
 	
 }

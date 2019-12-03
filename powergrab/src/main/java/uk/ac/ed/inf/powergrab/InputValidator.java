@@ -2,11 +2,15 @@ package uk.ac.ed.inf.powergrab;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.regex.*;
 
+/*
+ * Validates the user's input.
+ */
 public class InputValidator {
 	
+	/*
+	 * Checks that the user's input arguments are valid to play PowerGrab.
+	 */
 	public static boolean isValid(String[] args) {
 		
 		if (args.length != 7) {
@@ -35,19 +39,18 @@ public class InputValidator {
 		}
 		
 		try {
-			Float.parseFloat(initLatitudeAsString);
+			double initLatitude = Double.parseDouble(initLatitudeAsString);
+			double initLongitude = Double.parseDouble(initLongitudeAsString);
+			Position initPosition = new Position(initLatitude, initLongitude);
+			if (!initPosition.inPlayArea()) {
+				System.out.println("Initial starting position is not valid. It must be in the play area");
+				validInput = false;
+			}
 		} catch (NumberFormatException e) {
-			System.out.println("Latitude argument is not in correct format. Needs to be a float");
+			System.out.println("Latitude and longitude are not in correct format. Both need to be a float");
 			validInput = false;
 		}
-
-		try {
-			Float.parseFloat(initLongitudeAsString);
-		} catch (NumberFormatException e) {
-			System.out.println("Longitude argument is not in correct format. Needs to be a float");
-			validInput = false;
-		}
-
+		
 		try {
 			Integer.parseInt(seedAsString);
 		} catch (NumberFormatException e) {
@@ -55,7 +58,7 @@ public class InputValidator {
 			validInput = false;
 		}
 		
-		if (!args[6].matches("stateless|stateful")) {
+		if (!droneVersion.matches("stateless|stateful")) {
 			System.out.println("Drone version not in correct format. Needs to be \"stateless\" or \"stateful\"");
 			validInput = false;
 		}
