@@ -92,7 +92,9 @@ public class Position {
 		return Math.sqrt(latitudeDifference*latitudeDifference + longitudeDifference*longitudeDifference);
 	}
 	
-	// for testing/debugging
+	/*
+	 * for testing/debugging
+	 */
 	@Override
 	public String toString() {
 		return "Latitude: " + latitude + " Longitude: " + longitude;

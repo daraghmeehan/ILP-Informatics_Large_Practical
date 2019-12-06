@@ -24,14 +24,24 @@ public class ChargingStation {
 		return this.power;
 	}
 	
+	/*
+	 * Makes a transfer of coins when the drone is charged.
+	 */
 	public void transferCoins(float coinsTransfer) {
 		this.coins -= coinsTransfer;
 	}
 	
+	/*
+	 * Makes a transfer of power when the drone is charged.
+	 */
 	public void transferPower(float powerTransfer) {
 		this.power -= powerTransfer;
 	}
 	
+	/*
+	 * ChargingStation objects are equivalent if they are in the same position, but may have different coins/power.
+	 * No two stations can be in the same position.
+	 */
 	public boolean equals(ChargingStation chargingStation) {
 		return this.position.equals(chargingStation.position);
 	}
@@ -42,11 +52,6 @@ public class ChargingStation {
 	
 	public boolean isNegative() {
 		return this.coins < 0;
-	}
-	
-	// necessary?
-	public boolean isNeutral() {
-		return this.coins == 0;
 	}
 	
 	/*

@@ -62,31 +62,4 @@ public class MapBuilder {
 		return sb.toString();
 	}
 	
-	// testing
-	public static void main(String[] args) throws MalformedURLException, IOException {
-		Map map = MapBuilder.build("05", "05", "2019");
-		map.addDronePath(new Position(55.944425, -3.188396), new Position(55.945, -3.187));
-		map.addDronePath(new Position(55.945, -3.187), new Position(55.946233, -3.192473));
-		map.addDronePath(new Position(55.946233, -3.192473), new Position(55.946233, -3.184319));
-		map.addDronePath(new Position(55.946233, -3.184319), new Position(55.942617, -3.184319));
-		map.addDronePath(new Position(55.942617, -3.184319), new Position(55.942617, -3.192473));
-		map.addDronePath(new Position(55.942617, -3.192473), new Position(55.946233, -3.192473));
-		map.createGeoJSONMap("05", "05", "2019", "stateless");
-		
-		MovementLog movementLog = new MovementLog();
-		Move move1 = new Move(new Position(55.944425, -3.188396), Direction.SSE,
-				new Position(55.944147836140246, -3.1882811949702905), 0.0f, 248.75f);
-		movementLog.addMove(move1);
-		movementLog.writeLog("05", "05", "2019", "stateless");
-		
-		ChargingStation cS = map.getChargingStations().get(0);
-		System.out.println("cS coins: " + cS.getCoins());
-		Drone d = new StatelessDrone(new Position(0,0), 0);
-		System.out.println("d coins: " + d.getCoins());
-//		d.charge(cS);
-		System.out.println("cS coins: " + cS.getCoins());
-		System.out.println("d coins: " + d.getCoins());
-		System.out.println(map.getChargingStations().get(0).getCoins());
-	}
-	
 }

@@ -3,6 +3,9 @@ package uk.ac.ed.inf.powergrab;
 import java.util.List;
 import java.util.ArrayList;
 
+/*
+ * A basic simulation that uses the nearest neighbour algorithm to decide its route order.
+ */
 public class NearestNeighbourSimulation extends PowerGrabSimulation {
 	
 	private int[] basicOrder;
@@ -13,13 +16,14 @@ public class NearestNeighbourSimulation extends PowerGrabSimulation {
 		super(startingPosition, testStations);
 	}
 	
-	protected List<int[]> chooseStationOrders() {
+	/*
+	 * Chooses the route order using the nearest neighbour algorithm.
+	 */
+	@Override
+	public List<int[]> chooseStationOrders() {
 		
 		List<int[]> stationOrders = new ArrayList<int[]>(3);
 		
-//		List<ChargingStation> chargingStations = this.getChargingStations();
-//		List<ChargingStation> positiveStations = this.getPositiveStations();
-//		List<Position> routePositions = this.getRoutePositions();
 		double[][] distanceMatrix = super.getDistanceMatrix();
 		
 		basicOrder = NearestNeighbourSimulation.calculateNearestNeighbourOrder(
@@ -35,7 +39,10 @@ public class NearestNeighbourSimulation extends PowerGrabSimulation {
 		return stationOrders;
 		
 	}
-
+	
+	/*
+	 * The report phase of the basic simulation.
+	 */
 	@Override
 	public void report() {
 		
@@ -47,6 +54,9 @@ public class NearestNeighbourSimulation extends PowerGrabSimulation {
 				+ StatefulDrone.calculateTotalRouteDistance(this.threeOptOptimisedOrder, super.getDistanceMatrix()));
 	}
 	
+	/*
+	 * Calculates the nearest neighbour route order.
+	 */
 	private static int[] calculateNearestNeighbourOrder(double[][] distanceMatrix) {
 		
 		int n = distanceMatrix[0].length - 1;

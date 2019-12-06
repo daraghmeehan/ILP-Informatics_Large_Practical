@@ -9,7 +9,6 @@ import java.io.IOException;
  */
 public class PowerGrabGame implements PowerGrab { // Do I need an interface?
 	
-	// do I need this/is this the best way?
 	private boolean gameSetup = false;
 	private boolean gamePlayed = false;
 	
@@ -79,8 +78,6 @@ public class PowerGrabGame implements PowerGrab { // Do I need an interface?
 					Move move = drone.makeMove(chargingStations);
 					map.addDronePath(move.positionBefore, move.positionAfter);
 					movementLog.addMove(move);
-//					System.out.println("Move: " + movesMade);
-//					System.out.println("Coins :" + move.coinsAfter);
 					movesMade++;
 				} else {
 					System.out.println("Can't move. Power ran out.");

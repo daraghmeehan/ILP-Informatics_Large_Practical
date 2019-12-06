@@ -3,6 +3,9 @@ package uk.ac.ed.inf.powergrab;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * The basic simulation ran by the stateful drone.
+ */
 public abstract class PowerGrabSimulation implements PowerGrab {
 	
 	private boolean gameSetup = false;
@@ -20,13 +23,20 @@ public abstract class PowerGrabSimulation implements PowerGrab {
 	private float bestResult = 0;
 	private List<Direction> bestMoves = new ArrayList<Direction>();
 	
-	protected PowerGrabSimulation(Position startingPosition, List<ChargingStation> testStations) {
+	public PowerGrabSimulation(Position startingPosition, List<ChargingStation> testStations) {
 		this.originalDronePosition = startingPosition;
 		this.chargingStations = testStations;
 		this.positiveStations = StatefulDrone.calculatePositiveStations(this.chargingStations);
 		this.n = positiveStations.size();
 	}
 	
+	public double[][] getDistanceMatrix() {
+		return this.distanceMatrix;
+	}
+	
+	/*
+	 * The setup phase of the basic simulation.
+	 */
 	@Override
 	public void setup() {
 		
@@ -43,26 +53,17 @@ public abstract class PowerGrabSimulation implements PowerGrab {
 		
 	}
 	
-//	protected List<ChargingStation> getChargingStations() {
-//		return this.chargingStations;
-//	}
-//	
-//	protected List<ChargingStation> getPositiveStations() {
-//		return this.positiveStations;
-//	}
-//	
-//	protected List<Position> getRoutePositions() {
-//		return this.routePositions;
-//	}
+	/*
+	 * Calculates the different route orders using the simulations algorithm.
+	 */
+	public abstract List<int[]> chooseStationOrders();
 	
-	protected double[][] getDistanceMatrix() {
-		return this.distanceMatrix;
-	}
-	
-	protected abstract List<int[]> chooseStationOrders();
-	
+	/*
+	 * The play phase of the basic simulation.
+	 */
 	@Override
 	public void play() {
+		
 		if (this.gameSetup) {
 			for (int[] stationOrder : this.stationOrders) {
 				
@@ -85,8 +86,6 @@ public abstract class PowerGrabSimulation implements PowerGrab {
 					ChargingStation nextStation = positiveStations.get(nextStationNumber);
 					List<Direction> pathToNextStation = StatefulDrone.findShortestPath(
 							dronePosition, nextStation, chargingStations);
-					// what should do here?
-					// should check if move made yet and then must choose a random direction
 					if (pathToNextStation == null) {
 						continue;
 					}
@@ -98,9 +97,7 @@ public abstract class PowerGrabSimulation implements PowerGrab {
 							Direction nextMove = nextMoves.remove(0);
 							dronePosition = dronePosition.nextPosition(nextMove);
 							ChargingStation closestPositiveStation = Drone.calculateClosestStation(
-									dronePosition, positiveStations); // charging or positive?
-							// need to charge if close enough and mark this station off the ones to visit
-							// need to check if already visited
+									dronePosition, positiveStations);
 							int closestPositiveStationIndex = PowerGrabSimulation.findStationIndex(
 									closestPositiveStation, this.positiveStations);
 							if (!(closestPositiveStationIndex == -1)) {
@@ -116,16 +113,13 @@ public abstract class PowerGrabSimulation implements PowerGrab {
 							break navigateToNextStation;
 						}
 					}
-					// System.out.println("Total move count: " + totalMoves.size());
+					
 					result += nextStation.getCoins();
 					visitedPositiveStations[nextStationNumber] = true;
-					// System.out.println("Total coins so far: " + result);
 				}
 				
 				if (((int) result > (int) this.bestResult)
 						|| ((int) result == (int) bestResult) && totalMoves.size() < bestMoves.size()) {
-//					System.out.println("better result: " + result);
-//					System.out.println("better move count?: " + totalMoves.size());
 					this.bestResult = result;
 					this.bestMoves = totalMoves;
 				}
@@ -135,7 +129,6 @@ public abstract class PowerGrabSimulation implements PowerGrab {
 	}
 	
 	public float getResult() {
-		// if 0?
 		return this.bestResult;
 	}
 	
@@ -143,6 +136,9 @@ public abstract class PowerGrabSimulation implements PowerGrab {
 		return this.bestMoves;
 	}
 	
+	/*
+	 * Finds the index of a given charging station.
+	 */
 	private static int findStationIndex(ChargingStation chargingStation, List<ChargingStation> chargingStations) {
 		
 		for (int i = 0; i < chargingStations.size(); i++) {
@@ -153,6 +149,51 @@ public abstract class PowerGrabSimulation implements PowerGrab {
 		return -1;
 	}
 	
+	/*
+	 * Finds the position to place a given station in the route order that minimises the increase in estimated distance.
+	 */
+	public static int findBestInsertionPosition(int[] stationOrder, double[][] distanceMatrix,
+			int stationToInsert, int numberOfStationsVisited) {
+		
+		int bestInsertionPosition = 0;
+		double smallestDistanceIncrease = distanceMatrix[0][stationToInsert + 1]
+				+ distanceMatrix[stationToInsert + 1][stationOrder[0] + 1] - distanceMatrix[0][stationOrder[0] + 1];
+		
+		for (int positionToCheck = 1; positionToCheck <= numberOfStationsVisited; positionToCheck++) {
+			if (positionToCheck != numberOfStationsVisited) {
+				double distance = distanceMatrix[stationOrder[positionToCheck - 1] + 1][stationToInsert + 1]
+						+ distanceMatrix[stationToInsert + 1][stationOrder[positionToCheck] + 1]
+								- distanceMatrix[stationOrder[positionToCheck - 1] + 1][stationOrder[positionToCheck] + 1];
+				if (distance < smallestDistanceIncrease) {
+					bestInsertionPosition = positionToCheck;
+					smallestDistanceIncrease = distance;
+				}
+			} else {
+				double distance = distanceMatrix[stationOrder[positionToCheck - 1] + 1][stationToInsert + 1];
+				if (distance < smallestDistanceIncrease) {
+					bestInsertionPosition = positionToCheck;
+					smallestDistanceIncrease = distance;
+				}
+			}
+		}
+		
+		return bestInsertionPosition;
+	}
 	
+	/*
+	 * Inserts a given station in the route order in the specified position.
+	 */
+	public static int[] insertStationIntoRouteOrder(int stationToInsert, int bestInsertionPosition, int[] stationOrder) {
+
+		int n = stationOrder.length;
+
+		for (int i = n - 1; i > bestInsertionPosition; i--) {
+			stationOrder[i] = stationOrder[i - 1];
+		}
+
+		stationOrder[bestInsertionPosition] = stationToInsert;
+
+		return stationOrder;
+	}
 	
 }

@@ -20,17 +20,4 @@ public class GameParameters {
 	public static final float INITIAL_DRONE_COINS = 0.0f;
 	public static final float INITIAL_DRONE_POWER = 250f;
 	
-//	public GameParameters(int maxMoves, double moveDistance, double maxLatitude, double minLatitude,
-//			double maxLongitude, double minLongitude, float movePowerCost, float initialDroneCoins, float initialDronePower) {
-//		this.maxMoves = maxMoves;
-//		this.moveDistance = moveDistance;
-//		this.maxLatitude = maxLatitude;
-//		this.minLatitude = minLatitude;
-//		this.maxLongitude = maxLongitude;
-//		this.minLongitude = minLongitude;
-//		this.movePowerCost = movePowerCost;
-//		this.initialDroneCoins = initialDroneCoins;
-//		this.initialDronePower = initialDronePower;
-//	}
-	
 }
