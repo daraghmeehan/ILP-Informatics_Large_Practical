@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Node {
 	
-	private Position position;
+	public final Position position;
 	private List<Direction> path;
 	private double fScore;
 	private int gScore;
@@ -15,13 +15,7 @@ public class Node {
 		this.path = path;
 		this.gScore = path.size();
 //		 should this be here instead of drone?
-		this.fScore = this.gScore + StatefulDrone.aStarHeuristic(this.position, goalPosition)/0.0003;
-	}
-	
-
-	
-	public Position getPosition() {
-		return this.position;
+		this.fScore = this.gScore + (StatefulDrone.aStarHeuristic(this.position, goalPosition)/0.0003);
 	}
 	
 	public List<Direction> getPath() {
@@ -36,13 +30,13 @@ public class Node {
 		return this.gScore;
 	}
 	
-	public boolean reachedGoal(Position goalPosition) {
-		// game parameters
-		return Position.calculateDistance(this.position, goalPosition) < 0.00025;
+	public boolean reachedGoal(ChargingStation goalStation, List<ChargingStation> chargingStations) {
+		return (goalStation.isInRange(this.position)
+				&& goalStation.equals(Drone.calculateClosestStation(this.position, chargingStations)));
 	}
 	
 	public boolean equals(Node n) {
-		return this.position.equals(n.getPosition());
+		return this.position.equals(n.position);
 	}
 	
 	public List<Node> getNeighbours(Position goalPosition) {

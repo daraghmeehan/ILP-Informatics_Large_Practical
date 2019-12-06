@@ -11,6 +11,7 @@ public class PowerGrabGame implements PowerGrab { // Do I need an interface?
 	
 	// do I need this/is this the best way?
 	private boolean gameSetup = false;
+	private boolean gamePlayed = false;
 	
 	private final String day;
 	private final String month;
@@ -20,12 +21,12 @@ public class PowerGrabGame implements PowerGrab { // Do I need an interface?
 	private final String seedAsString;
 	private final String droneVersion;
 	
-	private int movesMade = 0;
-	
 	private Drone drone;
 	private Map map;
 	private List<ChargingStation> chargingStations;
 	private MovementLog movementLog;
+	
+	private int movesMade = 0;
 	
 	public PowerGrabGame(String[] args) {
 		this.day = args[0];
@@ -43,6 +44,7 @@ public class PowerGrabGame implements PowerGrab { // Do I need an interface?
 	 */
 	@Override
 	public void setup() {
+		
 		boolean successfulMapBuild = true;
 		this.drone = DroneBuilder.build(initLatitudeAsString, initLongitudeAsString, seedAsString, droneVersion);
 		try {
@@ -54,12 +56,12 @@ public class PowerGrabGame implements PowerGrab { // Do I need an interface?
 			System.out.println("Ran into difficulty downloading the map. Please try again.");
 			successfulMapBuild = false;
 		}
-		this.chargingStations = map.getChargingStations();
-		this.movementLog = new MovementLog();
 		if (!successfulMapBuild) {
 			System.out.println("Building the map was unsuccessful. Please try again.");
 			System.exit(1);
 		} else {
+			this.chargingStations = map.getChargingStations();
+			this.movementLog = new MovementLog();
 			this.gameSetup = true;
 		}
 	}
@@ -70,20 +72,25 @@ public class PowerGrabGame implements PowerGrab { // Do I need an interface?
 	 */
 	@Override
 	public void play() {
+		
 		if (gameSetup) {
 			while (movesMade < GameParameters.MAX_MOVES) {
 				if (drone.canMove()) {
 					Move move = drone.makeMove(chargingStations);
 					map.addDronePath(move.positionBefore, move.positionAfter);
 					movementLog.addMove(move);
-					System.out.println("Move: " + movesMade);
-					System.out.println("Coins :" + move.coinsAfter);
+//					System.out.println("Move: " + movesMade);
+//					System.out.println("Coins :" + move.coinsAfter);
 					movesMade++;
 				} else {
 					System.out.println("Can't move. Power ran out.");
+					gamePlayed = true;
 					return;
 				}
 			}
+			gamePlayed = true;
+		} else {
+			System.out.println("Can't play as setup has not been completed.");
 		}
 	}
 	
@@ -92,9 +99,12 @@ public class PowerGrabGame implements PowerGrab { // Do I need an interface?
 	 */
 	@Override
 	public void report() {
-		if (gameSetup) {
+		
+		if (gamePlayed) {
 			map.createGeoJSONMap(day, month, year, droneVersion);
 			movementLog.writeLog(day, month, year, droneVersion);
+		} else {
+			System.out.println("Can't report as the game has not been played.");
 		}
 	}
 	

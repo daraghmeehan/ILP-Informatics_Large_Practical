@@ -32,6 +32,10 @@ public class ChargingStation {
 		this.power -= powerTransfer;
 	}
 	
+	public boolean equals(ChargingStation chargingStation) {
+		return this.position.equals(chargingStation.position);
+	}
+	
 	public boolean isPositive() {
 		return this.coins > 0;
 	}

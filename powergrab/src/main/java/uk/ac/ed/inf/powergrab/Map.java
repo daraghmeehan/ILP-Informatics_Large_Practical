@@ -19,6 +19,7 @@ public class Map {
 	private List<Feature> mapFeatures;
 	private LineString dronePath = LineString.fromLngLats(new ArrayList<Point>());
 	
+	// should be public?
 	public Map(FeatureCollection f) {
 		mapFeatures = f.features();
 	}

@@ -25,6 +25,7 @@ public abstract class Drone {
 		return this.position;
 	}
 	
+	// get rid of these?
 	public float getCoins() {
 		return this.coins;
 	}
@@ -33,14 +34,18 @@ public abstract class Drone {
 		return this.power;
 	}
 	
+	public Random getRnd() {
+		return this.rnd;
+	}
+	
 	public boolean canMove() {
 		return power >= GameParameters.MOVE_POWER_COST;
 	}
 	
 	public Move makeMove(List<ChargingStation> chargingStations) {
+		
 		Position positionBefore = this.position;
 //		System.out.println("Before: " + positionBefore.toString());
-		
 		Direction moveDirection = this.chooseDirection(chargingStations);
 //		System.out.println("Direction: " + moveDirection);
 		Position positionAfter = this.position.nextPosition(moveDirection);
@@ -51,7 +56,6 @@ public abstract class Drone {
 		// doesn't change map's station values?
 		ChargingStation closestStation = Drone.calculateClosestStation(positionAfter, chargingStations);
 //		System.out.println("Distance to closestStation = " + Position.calculateDistance(positionAfter, closestStation.getPosition()));
-		// game parameters
 		if (closestStation.isInRange(this.position)) {
 			this.charge(closestStation);
 		}
@@ -62,24 +66,22 @@ public abstract class Drone {
 		return new Move(positionBefore, moveDirection, positionAfter, coinsAfter, powerAfter);
 	}
 	
+	protected abstract Direction chooseDirection(List<ChargingStation> chargingStations);
+	
 	private void consumePower() {
 		this.power -= GameParameters.MOVE_POWER_COST;
 	}
-	
-	public abstract Direction chooseDirection(List<ChargingStation> chargingStations);
 
 	public Direction chooseRandomDirection(List<ChargingStation> chargingStations) {
-		
-		//need to check if null?
+
+		// assumes always available directions to move in
 		List<Direction> availableDirections = Drone.calculateAvailableDirections(this.position);
-		
-		// do this for all directions?
 		List<ChargingStation> nearbyStations = this.calculateNearbyStations(chargingStations);
-		
+
 		Direction bestMove = null;
 		float bestMoveCoins = Float.NEGATIVE_INFINITY;
 		List<Direction> neutralMoves = new ArrayList<Direction>();
-		
+
 		if (nearbyStations.size() == 0) {
 			neutralMoves.addAll(availableDirections);
 		} else {
@@ -107,20 +109,21 @@ public abstract class Drone {
 				}
 			}
 		}
-		//spacing?
-		if (bestMoveCoins > 0) {		
+		
+		if (bestMoveCoins > 0 || neutralMoves.size() == 0) {		
 			return bestMove;
 		} else {
 			return this.makeRandomChoice(neutralMoves);
 		}
+		
 	}
-	
-	public static List<Direction> calculateAvailableDirections(Position currentPosition) {
+
+	public static List<Direction> calculateAvailableDirections(Position position) {
 		
 		List<Direction> availableDirections = new ArrayList<Direction>();
 		
 		for (Direction d : Direction.values()) {
-			Position newPosition = currentPosition.nextPosition(d);
+			Position newPosition = position.nextPosition(d);
 			if (newPosition.inPlayArea()) {
 				availableDirections.add(d);
 			}
@@ -155,7 +158,7 @@ public abstract class Drone {
 		return closestStation;
 	}
 
-	public List<ChargingStation> calculateNearbyStations(List<ChargingStation> chargingStations) {
+	private List<ChargingStation> calculateNearbyStations(List<ChargingStation> chargingStations) {
 		
 		List<ChargingStation> nearbyStations = new ArrayList<ChargingStation>();
 		for (ChargingStation chargingStation : chargingStations) {

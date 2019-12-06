@@ -3,96 +3,92 @@ package uk.ac.ed.inf.powergrab;
 import java.util.List;
 import java.util.ArrayList;
 
-// assumes the drone won't run out of power
-public class NearestNeighbourSimulation implements PowerGrabSimulation {
+public class NearestNeighbourSimulation extends PowerGrabSimulation {
 	
-	private boolean gameSetup = false;
-	
-	private int movesMade = 0;
-	private Position dronePosition;
-	
-	private List<ChargingStation> chargingStations;
-	private List<ChargingStation> positiveStations;
-	private List<ChargingStation> negativeStations;
-	
-	private List<Direction> nextMoves = new ArrayList<Direction>();
-	private float result = 0;
-	private List<Direction> totalMoves = new ArrayList<Direction>();
+	private int[] basicOrder;
+	private int[] twoOptOptimisedOrder;
+	private int[] threeOptOptimisedOrder;
 	
 	public NearestNeighbourSimulation(Position startingPosition, List<ChargingStation> testStations) {
-		this.dronePosition = startingPosition;
-		this.chargingStations = testStations;
+		super(startingPosition, testStations);
 	}
 	
-	@Override
-	public void setup() {
-		this.positiveStations = StatefulDrone.calculatePositiveStations(chargingStations);
-		this.negativeStations = StatefulDrone.calculateNegativeStations(chargingStations);
-		this.gameSetup = true;
+	protected List<int[]> chooseStationOrders() {
+		
+		List<int[]> stationOrders = new ArrayList<int[]>(3);
+		
+//		List<ChargingStation> chargingStations = this.getChargingStations();
+//		List<ChargingStation> positiveStations = this.getPositiveStations();
+//		List<Position> routePositions = this.getRoutePositions();
+		double[][] distanceMatrix = super.getDistanceMatrix();
+		
+		basicOrder = NearestNeighbourSimulation.calculateNearestNeighbourOrder(
+				distanceMatrix);
+		stationOrders.add(basicOrder);
+		
+		twoOptOptimisedOrder = StatefulDrone.twoOptOptimise(basicOrder, distanceMatrix);
+		stationOrders.add(twoOptOptimisedOrder);
+		
+		threeOptOptimisedOrder = StatefulDrone.threeOptOptimise(basicOrder, distanceMatrix);
+		stationOrders.add(threeOptOptimisedOrder);
+		
+		return stationOrders;
+		
 	}
-	
-	// params
-	@Override
-	public void play() {
-		if (this.gameSetup) {
-			// moves made later in logic
-			while (this.positiveStations.size() > 0) {
-				ChargingStation closestPositiveStation = Drone.calculateClosestStation(this.dronePosition, positiveStations);
-				List<Direction> pathToClosestPositiveStation = StatefulDrone.findShortestPath(
-						this.dronePosition, closestPositiveStation.position, negativeStations);
-//				//testing
-//				for (Direction d : pathToClosestPositiveStation) {
-//					System.out.println(d.toString());
-//				}
-				// what should do here?
-				if (pathToClosestPositiveStation == null) {
-					positiveStations.remove(closestPositiveStation);
-					continue;
-				}
-				
-				nextMoves.addAll(pathToClosestPositiveStation);
-				
-				while (nextMoves.size() > 0) {
-					if (movesMade < GameParameters.MAX_MOVES) {
-						Direction nextMove = nextMoves.remove(0);
-						dronePosition = dronePosition.nextPosition(nextMove);
-						totalMoves.add(nextMove);
-						movesMade++;
-					} else {
-						return;
-					}
-				}
-//				System.out.println("Total move count: " + totalMoves.size());
-				result += closestPositiveStation.getCoins();
-//				System.out.println("Total coins so far: " + result);
-				positiveStations.remove(closestPositiveStation);
-			}
-		}
-	}
-	
+
 	@Override
 	public void report() {
-		if (this.gameSetup) {
-			System.out.println("Nearest Neighbour Simulation coins: " + result);
-			System.out.println("Nearest Neighbour Simulation total move count: " + totalMoves.size());
+		
+		System.out.println("Estimated nearest neighbour distance before optimisation: "
+				+ StatefulDrone.calculateTotalRouteDistance(this.basicOrder, super.getDistanceMatrix()));
+		System.out.println("Estimated distance after 2-opt optimisation: "
+				+ StatefulDrone.calculateTotalRouteDistance(this.twoOptOptimisedOrder, super.getDistanceMatrix()));
+		System.out.println("Estimated distance after 3-opt optimisation: "
+				+ StatefulDrone.calculateTotalRouteDistance(this.threeOptOptimisedOrder, super.getDistanceMatrix()));
+	}
+	
+	private static int[] calculateNearestNeighbourOrder(double[][] distanceMatrix) {
+		
+		int n = distanceMatrix[0].length - 1;
+		int[] stationOrder = new int[n];
+		boolean[] visitedStations = new boolean[n];
+		
+		int initialMinStation = 0;
+		double initialMinDistance = distanceMatrix[0][0];
+		
+		for (int stationNumber = 0; stationNumber < n; stationNumber++) {
+			double distance = distanceMatrix[0][stationNumber + 1];
+			if (distance < initialMinDistance) {
+				initialMinStation = stationNumber;
+				initialMinDistance = distance;
+			}
 		}
+		
+		stationOrder[0] = initialMinStation;
+		visitedStations[initialMinStation] = true;
+		
+		for (int stationOrderIndex = 0; stationOrderIndex < n - 1; stationOrderIndex++) {
+			int currentStation = stationOrder[stationOrderIndex];
+			
+			int minStation = currentStation;
+			double minDistance = distanceMatrix[currentStation + 1][currentStation + 1];
+			
+			for (int stationNumber = 0; stationNumber < n; stationNumber++) {
+				if (visitedStations[stationNumber]) {
+					continue;
+				}
+				double distance = distanceMatrix[currentStation + 1][stationNumber + 1];
+				if (distance < minDistance) {
+					minStation = stationNumber;
+					minDistance = distance;
+				}
+			}
+			
+			stationOrder[stationOrderIndex + 1] = minStation;
+			visitedStations[minStation] = true;
+		}
+		
+		return stationOrder;
 	}
-	
-	public float getResult() {
-		// if 0?
-		return this.result;
-	}
-	
-	public List<Direction> getMoves() {
-		return this.totalMoves;
-	}
-	
-//	public List<ChargingStation> getPositiveStations() {
-//		return this.positiveStations;
-//	}
-//	
-//	public List<ChargingStation> getNegativeStations() {
-//		return this.negativeStations;
-//	}
 	
 }
