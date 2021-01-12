@@ -15,4 +15,4 @@ The stateful (look ahead) drone uses:
 > Tour Construction = Nearest Neighbour, Nearest Insertion, Farthest Insertion
 > Tour Improvement = 2-Opt and 3-Opt
 
-![alt text](https://github.com/daraghmeehan/ILP/blob/master/sample-images/stateful 01-01-2019.jpg?raw=true)
+![alt text](https://github.com/daraghmeehan/ILP/blob/master/sample-images/stateful01-01-2019.jpg?raw=true)
